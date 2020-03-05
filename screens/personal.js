@@ -16,4 +16,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  screen: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textinput: {
+    borderColor: 'black',
+    borderWidth: 1,
+    padding: 10
+  },
+  button:{
+    padding: 10,
+  }
 });

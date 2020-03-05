@@ -1,32 +1,50 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import Navigator from './routes/app-navigator.js'
+import Navigator from './routes/App-navigator.js'
+import { registerRootComponent, AppLoading } from 'expo';
+import * as Font from 'expo-font';
 
-export default function App() {
-  return (
-    <Navigator/>
-  );
+class App extends Component {
+  state = {
+    isLoadingComplete: false,
+  };
+
+  loadResourcesAsync = async () => Promise.all([
+    Font.loadAsync({
+      'custom-icons': require('./assets/fonts/custom-icons.ttf'),
+    }),
+  ]);
+
+  handleLoadingError = (error) => {
+    // In this case, you might want to report the error to your error
+    // reporting service, for example Sentry
+    console.warn(error);
+  };
+
+  handleFinishLoading = () => {
+    this.setState({ isLoadingComplete: true });
+  };
+
+  render() {
+    const { isLoadingComplete } = this.state;
+
+    if (!isLoadingComplete) {
+      return (
+        <AppLoading
+          startAsync={this.loadResourcesAsync}
+          onError={this.handleLoadingError}
+          onFinish={this.handleFinishLoading}
+        />
+      );
+    }
+
+    return (
+      <Navigator />
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  screen: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  textinput: {
-    borderColor: 'black',
-    borderWidth: 1,
-    padding: 10
-  },
-  button:{
-    padding: 10,
-  }
-});
+registerRootComponent(App);
+
+// Export the App component for unit testing purposes. Expo handles rendering
+// via the "registerRootComponent" call above and does not require an export.
+export default App;

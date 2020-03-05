@@ -1,11 +1,13 @@
-import React, { Component } from 'react'
+import React from 'react'
+import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { MaterialCommunityIcons } from 'react-native-vector-icons';
-import HomeScreen from '../screens/home.js'
-import RidesScreen from '../screens/rides.js'
-import AddressesScreen from '../screens/addresses.js'
-import PersonalScreen from '../screens/personal.js'
+import { MaterialCommunityIcons, FontAwesome } from 'react-native-vector-icons';
+import CustomIcon from '../components/CustomIcon.js'
+import HomeScreen from '../screens/Home.js'
+import RidesScreen from '../screens/Rides.js'
+import AddressesScreen from '../screens/Addresses.js'
+import PersonalScreen from '../screens/Personal.js'
 
 const Tab = createMaterialBottomTabNavigator();
 
@@ -16,14 +18,12 @@ export default function AppNavigator() {
                 initialRouteName="Home"
                 activeColor="#e91e63"
                 labelStyle={{ fontSize: 12 }}
-                barStyle={{ backgroundColor: 'silver'}}
-                
+                barStyle={{ backgroundColor: 'lightgreen'}}
             >
                 <Tab.Screen 
                     name="Home" 
                     component={HomeScreen} 
                     options={{
-                        
                         tabBarLabel: 'Home',
                         tabBarIcon: ({ color, size=20 }) => (
                             <MaterialCommunityIcons name="home" color={color} size={20} />
@@ -46,7 +46,9 @@ export default function AppNavigator() {
                     options={{
                         tabBarLabel: 'Addresses',
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="book" color={color} size={20} />
+                            // <MaterialCommunityIcons name="folder-home" color={color} size={20} />
+                            // <FontAwesome name="address-book" color={color} size={20} />
+                            <CustomIcon name="folder-home" color={color} size={20} />
                         ),
                     }}
                 />
@@ -56,7 +58,7 @@ export default function AppNavigator() {
                     options={{
                         tabBarLabel: 'Personal',
                         tabBarIcon: ({ color, size }) => (
-                            <MaterialCommunityIcons name="car" color={color} size={20} />
+                            <MaterialCommunityIcons name="account" color={color} size={20} />
                         ),
                     }}
                 />
