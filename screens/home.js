@@ -16,8 +16,6 @@ export default function Home() {
         </View>
         <View style={styles.bottom}>
           <Text>Lower Screen</Text>
-          
-              
         </View>
       </View>
     );
@@ -29,7 +27,7 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       // alignItems: 'center',
       // justifyContent: 'center',
-      marginTop: 25,
+      marginTop: 30,
       borderColor: 'black',
       borderWidth: 2
     },
