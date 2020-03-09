@@ -9,9 +9,11 @@ export default class HomeScreenMap extends Component {
     super(props);
     this.state = {
       location: null,
+      lastPosition: null,
       errorMessage: null,
       latitude: 0,
       longitude: 0,
+      watchID: 0,
     };
   }
 
@@ -38,6 +40,9 @@ export default class HomeScreenMap extends Component {
         this._getLocationAsync();
       }
   }
+
+  componentWillUnmount = () => {
+  }
     
   _getLocationAsync = async () => {
       let { status } = await Permissions.askAsync(Permissions.LOCATION);   
@@ -46,13 +51,14 @@ export default class HomeScreenMap extends Component {
           errorMessage: 'Permission to access location was denied',
         });
       }
-      let location = await Location.getCurrentPositionAsync({});
+      let location = await Location.getCurrentPositionAsync();
       this.setState({ location });
       this.setState({
         latitude: location["coords"]["latitude"],
         longitude: location["coords"]["longitude"]
       })
-      console.log('\n', this.state.location["coords"], 'LOCATION')
+
+      // console.log('\n', this.state.location["coords"], 'LOCATION')
   };
 
   render(){
@@ -65,8 +71,12 @@ export default class HomeScreenMap extends Component {
 
       return (
           <View>
-              {/* <Text>{locationText}</Text> */}
-              <MapView style={styles.mapStyleSmall} />
+              <Text>Initial Position</Text>
+              <Text>{locationText}</Text>
+              <Text/>
+              <Text>Current Position</Text>
+              <Text>{JSON.stringify(this.state.lastPosition)}</Text>
+              {/* <MapView style={styles.mapStyleSmall} /> */}
           </View>
       );
   }

@@ -19,13 +19,25 @@ export default function AppNavigator() {
                 activeColor="#e91e63"
                 labelStyle={{ fontSize: 12 }}
                 barStyle={{ backgroundColor: 'lightgreen'}}
+                // screenOptions={({ route }) => ({
+                //     tabBarLabel: route.name,
+                //     tabBarIcon: ({ color, size }) => {
+                //         if (route.name === 'Addresses') {
+                //             console.log('ROUTE', route);
+                //             return <CustomIcon name="folder-home" color={color} size={size} />
+                //         }
+                //         else {
+                //             return <MaterialCommunityIcons name="home" color={color} size={size} />
+                //         }
+                //     },
+                // })}
             >
                 <Tab.Screen 
                     name="Home" 
-                    component={HomeScreen} 
+                    component={HomeScreen}
                     options={{
                         tabBarLabel: 'Home',
-                        tabBarIcon: ({ color, size=20 }) => (
+                        tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="home" color={color} size={20} />
                         ),
                     }}
@@ -46,8 +58,6 @@ export default function AppNavigator() {
                     options={{
                         tabBarLabel: 'Addresses',
                         tabBarIcon: ({ color, size }) => (
-                            // <MaterialCommunityIcons name="folder-home" color={color} size={20} />
-                            // <FontAwesome name="address-book" color={color} size={20} />
                             <CustomIcon name="folder-home" color={color} size={20} />
                         ),
                     }}

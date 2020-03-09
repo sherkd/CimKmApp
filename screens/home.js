@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, TextInput} from 'react-native'
 import HomeScreenMap from '../components/HomeScreenMap.js'
-import { List } from 'react-native-paper'
 
 export default function Home() {
     return (
