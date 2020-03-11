@@ -1,15 +1,31 @@
 import React from 'react'
-import { Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { MaterialCommunityIcons, FontAwesome } from 'react-native-vector-icons';
-import CustomIcon from '../components/CustomIcon.js'
-import HomeScreen from '../screens/Home.js'
-import RidesScreen from '../screens/Rides.js'
-import AddressesScreen from '../screens/Addresses.js'
-import PersonalScreen from '../screens/Personal.js'
+import { createStackNavigator } from '@react-navigation/stack';
+import { MaterialCommunityIcons } from 'react-native-vector-icons';
+import CustomIcon from '../components/CustomIcon'
+import HomeScreen from '../screens/Home'
+import TrackingScreen from '../screens/Tracking'
+import RidesScreen from '../screens/Rides'
+import AddressesScreen from '../screens/Addresses'
+import PersonalScreen from '../screens/Personal'
 
 const Tab = createMaterialBottomTabNavigator();
+
+const HomeStack = createStackNavigator();
+
+function HomeStackScreen() {
+  return (
+    <HomeStack.Navigator 
+        screenOptions={{
+            headerShown: false,
+        }}
+    >
+      <HomeStack.Screen name="Home" component={HomeScreen}/>
+      <HomeStack.Screen name="Tracking" component={TrackingScreen} />
+    </HomeStack.Navigator>
+  );
+}
 
 export default function AppNavigator() {
     return(
@@ -19,6 +35,7 @@ export default function AppNavigator() {
                 activeColor="#e91e63"
                 labelStyle={{ fontSize: 12 }}
                 barStyle={{ backgroundColor: 'lightgreen'}}
+                screenOptions= {{}}
                 // screenOptions={({ route }) => ({
                 //     tabBarLabel: route.name,
                 //     tabBarIcon: ({ color, size }) => {
@@ -34,7 +51,7 @@ export default function AppNavigator() {
             >
                 <Tab.Screen 
                     name="Home" 
-                    component={HomeScreen}
+                    component={HomeStackScreen}
                     options={{
                         tabBarLabel: 'Home',
                         tabBarIcon: ({ color, size }) => (

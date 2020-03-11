@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Dimensions, Button } from 'react-native'
-import * as Location from 'expo-location';
-import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location'
+import * as Permissions from 'expo-permissions'
 import MapView, { Marker } from 'react-native-maps'
 
 export default class HomeScreenMap extends Component {
@@ -90,5 +90,5 @@ const styles = StyleSheet.create({
     mapStyleSmall: {
         width: 360,
         height: 300,
-      }
+    }
   });

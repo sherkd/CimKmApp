@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { View, StyleSheet} from 'react-native'
 import Navigator from './routes/App-navigator.js'
 import { registerRootComponent, AppLoading } from 'expo';
 import * as Font from 'expo-font';
@@ -42,9 +43,9 @@ class App extends Component {
     );
   }
 }
-
 registerRootComponent(App);
 
 // Export the App component for unit testing purposes. Expo handles rendering
 // via the "registerRootComponent" call above and does not require an export.
 export default App;
+
