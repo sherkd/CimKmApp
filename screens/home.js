@@ -2,13 +2,14 @@ import React from 'react'
 import { StyleSheet, Text, View, Button, TextInput} from 'react-native'
 import HomeScreenMap from '../components/Home/HomeScreenMap'
 import HomeScreenQuickStart from '../components/Home/HomeScreenQuickStart'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home({ navigation }) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={styles.container}>
         <View style={styles.upper}>
           {/* <Text>Upper Screen</Text> */}
-          <HomeScreenMap/>
+          <HomeScreenMap />
         </View>
         <View style={styles.middle}>
           {/* <Text>Middle Screen</Text> */}
@@ -18,7 +19,7 @@ export default function Home({ navigation }) {
           {/* <Text>Lower Screen</Text> */}
           <HomeScreenQuickStart/>
         </View>
-      </View>
+      </SafeAreaView>
     );
 }
   
@@ -28,13 +29,11 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       // alignItems: 'center',
       // justifyContent: 'center',
-      marginTop: 30,
       // borderColor: 'black',
       // borderWidth: 2
     },
     upper:{
       flex: 4,
-      marginTop: 30,
       alignItems: 'center',
       justifyContent: 'center',
       // borderColor: 'red',

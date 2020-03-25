@@ -93,7 +93,9 @@ export default HomeScreenMap
 const styles = StyleSheet.create ({
     mapStyleSmall: {
         width: 370,
-        height: 310,
+        // width: '100%',
+        // height: 310,
+        height: '95%',
     },
     upperView:{
         alignItems: 'center',

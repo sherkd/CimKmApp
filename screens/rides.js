@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, TextInput} from 'react-native'
+// import { getRides } from '../database/RidesApi'ss
 
 export default function Rides() {
   return (
