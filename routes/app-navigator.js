@@ -11,7 +11,6 @@ import AddressesScreen from '../screens/Addresses'
 import PersonalScreen from '../screens/Personal'
 
 const Tab = createMaterialBottomTabNavigator();
-
 const HomeStack = createStackNavigator();
 
 function HomeStackScreen() {

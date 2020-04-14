@@ -9,6 +9,7 @@ export default function Rides() {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
