@@ -73,10 +73,29 @@ const styles = StyleSheet.create ({
         borderColor: 'red',
         width: '100%'
     },
+    top: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    middle:{
+        flex: 6,
+    },
+    bottom: {
+        flex: 2
+    },
     boxView: {
         flex: 1,
         borderWidth: 2,
         backgroundColor: 'gray',
+    },
+    titleContainer: {
+        borderWidth: 2,
+        backgroundColor: 'lightgreen',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '40%',
+        height: '70%',
     },
     item: {
         flexDirection: "row",
@@ -101,39 +120,14 @@ const styles = StyleSheet.create ({
         fontSize: 13,
     },
     title: {
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        paddingTop: 5,
         fontSize: 16,
-        fontWeight: "bold",
-        
+        fontWeight: "bold",    
     },
     button: {
         backgroundColor: 'lightgreen',
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     centered:{
         alignItems: 'center',
         justifyContent: 'center',
     },
-    top: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    middle:{
-        flex: 6,
-    },
-    bottom: {
-        flex: 2
-    },
-    titleContainer: {
-        borderWidth: 2,
-        backgroundColor: 'lightgreen',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '40%',
-        height: '70%'
-    }
 })
