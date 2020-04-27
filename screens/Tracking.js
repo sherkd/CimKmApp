@@ -1,6 +1,6 @@
 import React from 'react'
 import { StyleSheet, Text, View, Button} from 'react-native'
-import TrackingScreenMap from '../components/Tracking/TrackingScreenMap'
+import TrackingScreenMap from '../components/tracking/TrackingScreenMap'
 
 export default function Tracking() {
     return (

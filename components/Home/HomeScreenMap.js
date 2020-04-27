@@ -100,5 +100,6 @@ const styles = StyleSheet.create ({
     upperView:{
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 1
       },
 })

@@ -1,8 +1,8 @@
 import React from 'react'
-import { StyleSheet, Text, View, Button, TextInput} from 'react-native'
-import HomeScreenMap from '../components/Home/HomeScreenMap'
-import HomeScreenQuickStart from '../components/Home/HomeScreenQuickStart'
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, Text, View, Button, TextInput, SafeAreaView} from 'react-native'
+import HomeScreenMap from '../components/home/HomeScreenMap'
+import HomeScreenQuickStart from '../components/home/HomeScreenQuickStart'
+// import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home({ navigation }) {
     return (
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
       // justifyContent: 'center',
       // borderColor: 'green',
       // borderWidth: 2,
-      // paddingTop: 15
+      paddingBottom: 29
     },
     centered:{
       alignItems: 'center',

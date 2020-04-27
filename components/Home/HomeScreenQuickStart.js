@@ -90,6 +90,7 @@ const styles = StyleSheet.create ({
         borderWidth: 2,
         borderColor: 'black',
         backgroundColor: 'gray',
+        paddingTop: 5
     },
     item: {
         flexDirection: "row",
@@ -117,7 +118,8 @@ const styles = StyleSheet.create ({
     title: {
         // alignItems: 'center',
         // justifyContent: 'center',
-        paddingTop: 5,
+        padding: 5,
+        // margin: 5,
         fontSize: 16,
         fontWeight: "bold",
         color: 'lightgray'

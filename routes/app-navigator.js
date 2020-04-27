@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
-import CustomIcon from '../components/CustomIcon'
+import CustomIcon from '../components/routes/CustomIcon'
 import HomeScreen from '../screens/Home'
 import TrackingScreen from '../screens/Tracking'
 import RidesScreen from '../screens/Rides'
