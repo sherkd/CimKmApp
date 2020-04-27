@@ -1,5 +1,4 @@
 import * as SQLite from 'expo-sqlite';
-import { Component } from 'react';
 
 const db = SQLite.openDatabase('CimKmApp.db')
 
@@ -26,13 +25,26 @@ export async function createRidesTable(){
 }
 
 export async function getRides() {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {
+            tx.executeSql('SELECT * FROM rides', [], function(tx, results) {
+                const rides = [];
+                var len = results.rows.length;
+                for (let i = 0; i < len; i++) {
+                    rides.push(results.rows.item(i));
+                }
+                resolve(rides);
+            })
+        });  
+    })
+}
 
-    db.transaction(tx => {
-        tx.executeSql(
-            "SELECT * FROM rides",
-            [], (_, { rows }) =>
-            console.log ( JSON.parse( JSON.stringify(rows["_array"]) ) ),
-        );
+export async function deleteRide(id) {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {
+            tx.executeSql('DELETE FROM rides WHERE id = ?', [id], function(tx, results) {
+            })
+        });  
     })
 }
 

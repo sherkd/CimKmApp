@@ -9,7 +9,7 @@ class EmptyComponent extends Component {
 
     }
 
-   componentDidMount = () => {
+    componentDidMount = () => {
 
     }
     

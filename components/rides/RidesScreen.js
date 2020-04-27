@@ -1,18 +1,20 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import * as DbRidesApi from '../../database/DbRidesApi'
+import DbRides from '../../database/DbGetRides'
 import { Button } from 'react-native-paper'
 
-function Item({ fromAddress, toAddress, distance }) {
+function Item({ item, updateFunction, deleteFunction, refreshFunction  }) {
     return (
         <View style={styles.item}>
             <View style={styles.itemContainerLeft}>
-                <Text style={styles.itemTitle}>Van {fromAddress}</Text>
-                <Text style={styles.itemTitle}>Naar {toAddress}</Text>
-                <Text style={styles.itemText}>Afstand: {distance}</Text>
+                <Text style={styles.itemTitle}>Van {item.fromAddress}</Text>
+                <Text style={styles.itemTitle}>Naar {item.toAddress}</Text>
+                <Text style={styles.itemText}>Afstand: {item.distance}</Text>
             </View>
             <View style={styles.itemContainerRight}> 
-                <Button style={styles.button} title='START'><Text style={styles.itemText}>Wijzig</Text></Button>
+                <Button onPress={() => {updateFunction(item)}} style={styles.button} title='START'><Text style={styles.itemText}>Wijzig</Text></Button>
+                <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={styles.button} title='START'><Text style={styles.itemText}>Verwijder</Text></Button>
             </View>
         </View>
     );
@@ -20,11 +22,26 @@ function Item({ fromAddress, toAddress, distance }) {
 
 class RidesScreen extends Component {
     state = {
+        data: []
+    }
 
+    _getRides = async () => {
+        this.setState( {
+            data: await DbRidesApi.getRides()
+        });
+    }
+
+    _deleteRide = async (id) => {
+        await DbRidesApi.deleteRide(id);
+    }
+
+    _updateRide = async (item) => {
+        console.log(item);
     }
 
     componentDidMount = () => {
         DbRidesApi.createRidesTable()
+        this._getRides();
     }
     
     componentDidUpdate = () => {
@@ -45,20 +62,16 @@ class RidesScreen extends Component {
                 </View>
                 <View style={styles.middle}>
                     <View style={styles.boxView}>
-                        {/* <FlatList
-                        data={}
-                        renderItem={({ item }) => <Item fromAddress={item.fromAddress} toAddress={item.toAddress} distance={item.distance} />}
+                        <FlatList
+                        data={this.state.data}
+                        renderItem={({ item }) => <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides}  />}
                         keyExtractor={item => item.id}
-                        /> */}
-                        <Item fromAddress={"Teststraat"} toAddress={"Straattest"} distance={"26"} />
+                        />
                     </View>
                 </View>
                 <View style={styles.bottom}>
-                    <Button onPress={() => <Item/>}>Add Item</Button>
-
-                    <Button onPress={() => DbRidesApi.InsertRides('a', 'a','a','a','a','a','a','a','a')}>Insert Table</Button>
-                    <Button onPress={() => DbRidesApi.getRides()}>Get Table</Button>
-                    <Button onPress={() => DbRidesApi.clearRidesTable()}>Clear Table</Button>
+                    <Button onPress={() => {DbRidesApi.InsertRides('a', 'a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
+                    <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
                 </View>
             </View>
         )
