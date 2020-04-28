@@ -4,23 +4,20 @@ const db = SQLite.openDatabase('CimKmApp.db')
 
 export async function createRidesTable(){
     db.transaction(tx => {
-        try{
-            tx.executeSql(
-                `create table if not exists rides (
-                  id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-                  date TEXT NOT NULL,
-                  distance TEXT NOT NULL,
-                  diversionReason TEXT NOT NULL,
-                  fromAddress TEXT NOT NULL,
-                  fromPostalCode TEXT NOT NULL,
-                  toAddress TEXT NOT NULL,
-                  toPostalCode TEXT NOT NULL,
-                  purposeReason TEXT NOT NULL,
-                  purposeType TEXT NOT NULL);`
-              );
-        }catch (e){
-            console.error(e.message);
-        }
+        tx.executeSql(
+            `create table if not exists rides (
+                id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+                date TEXT NOT NULL,
+                distance TEXT NOT NULL,
+                diversionReason TEXT NOT NULL,
+                fromAddress TEXT NOT NULL,
+                fromPostalCode TEXT NOT NULL,
+                toAddress TEXT NOT NULL,
+                toPostalCode TEXT NOT NULL,
+                purposeReason TEXT NOT NULL,
+                purposeType TEXT NOT NULL);
+            `
+        )
     });
 }
 
@@ -33,22 +30,14 @@ export async function getRides() {
                 for (let i = 0; i < len; i++) {
                     rides.push(results.rows.item(i));
                 }
+                console.log(rides)
                 resolve(rides);
             })
         });  
     })
 }
 
-export async function deleteRide(id) {
-    return new Promise((resolve) => {
-        db.transaction((tx) => {
-            tx.executeSql('DELETE FROM rides WHERE id = ?', [id], function(tx, results) {
-            })
-        });  
-    })
-}
-
-export async function InsertRides(date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType) {
+export async function insertRides(date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType) {
     db.transaction(tx => {
         try {
             tx.executeSql(
@@ -61,6 +50,30 @@ export async function InsertRides(date, distance, diversionReason, fromAddress, 
         } catch (error) {
             console.error(error)
         }
+    })
+}
+
+export async function updateRides(id) {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {
+            tx.executeSql( 'UPDATE rides SET distance = ? WHERE id = ?', ["26", id], (tx, results) => {
+                console.log('Results', results.rowsAffected)
+                if(results.rowsAffected>0){
+                    alert('Update Successfull')
+                }else{
+                    alert('Updation Failed');
+                }
+            })      
+        })
+    })
+}
+
+export async function deleteRide(id) {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {
+            tx.executeSql('DELETE FROM rides WHERE id = ?', [id], function(tx, results) {
+            })
+        });  
     })
 }
 

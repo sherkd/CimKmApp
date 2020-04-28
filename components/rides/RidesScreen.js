@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import * as DbRidesApi from '../../database/DbRidesApi'
 import { Button } from 'react-native-paper'
+import { FontAwesome } from '@expo/vector-icons';
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction  }) {
+function Item({ item, updateFunction, deleteFunction, refreshFunction }) {
     return (
         <View style={styles.item}>
             <View style={styles.itemContainerLeft}>
@@ -12,11 +13,17 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction  }) {
                 <Text style={styles.itemText}>Afstand: {item.distance}</Text>
             </View>
             <View style={styles.itemContainerRight}> 
-                <Button onPress={() => {updateFunction(item)}} style={styles.button} title='START'><Text style={styles.itemText}>Wijzig</Text></Button>
-                <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={styles.button} title='START'><Text style={styles.itemText}>Verwijder</Text></Button>
+                <View style={styles.itemContainerRightTop}>
+                    {/* <Button onPress={() => {updateFunction(item)}} style={styles.editBtn}><Text style={styles.itemText}>Wijzig</Text></Button> */}
+                    <Button onPress={() => {updateFunction(item); refreshFunction()}} style={styles.editBtn}><FontAwesome name="edit" color="black" size="16"/></Button>
+                    <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={styles.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
+                </View>
+                <View style={styles.itemContainerRightBottom}>
+                    <Button onPress={() => {updateFunction(item)}} style={styles.editBtn}><Text style={styles.itemText}>Bekijk</Text></Button>
+                </View>
             </View>
         </View>
-    );
+    )
 }
 
 class RidesScreen extends Component {
@@ -30,12 +37,13 @@ class RidesScreen extends Component {
         });
     }
 
-    _deleteRide = async (id) => {
-        await DbRidesApi.deleteRide(id);
-    }
-
     _updateRide = async (item) => {
         console.log(item);
+        await DbRidesApi.updateRides(item.id);
+    }
+
+    _deleteRide = async (id) => {
+        await DbRidesApi.deleteRide(id);
     }
 
     componentDidMount = () => {
@@ -62,14 +70,14 @@ class RidesScreen extends Component {
                 <View style={styles.middle}>
                     <View style={styles.boxView}>
                         <FlatList
-                        data={this.state.data}
-                        renderItem={({ item }) => <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides}  />}
-                        keyExtractor={item => item.id}
+                            data={this.state.data}
+                            renderItem={({ item }) => <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides}  />}
+                            keyExtractor={item => item.id}
                         />
                     </View>
                 </View>
                 <View style={styles.bottom}>
-                    <Button onPress={() => {DbRidesApi.InsertRides('a', 'a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
+                    <Button onPress={() => {DbRidesApi.insertRides('a', 'a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
                     <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
                 </View>
             </View>
@@ -116,15 +124,30 @@ const styles = StyleSheet.create ({
         borderWidth: 2,
         padding: 10,
         margin: 10,
+        // alignItems: 'center',
+        // justifyContent: 'center',
     },
     itemContainerLeft: {
-        flex: 4
+        flex: 4,
+        borderWidth: 2,
+        borderColor: 'yellow'
     },
     itemContainerRight: {
-        flex: 6,
+        // flex: 4,
+        // flexDirection: 'row',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        borderWidth: 2,
+        borderColor: 'blue'
+    },
+    itemContainerRightTop: {
         flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
+        // borderWidth: 1,
+        // borderColor: 'red'
+    },
+    itemContainerRightBottom: {
+        // borderWidth: 1,
+        // borderColor: 'green'
     },
     itemTitle: {
         fontSize: 15,
@@ -139,6 +162,14 @@ const styles = StyleSheet.create ({
     },
     button: {
         backgroundColor: 'lightgreen',
+    },
+    editBtn: {
+        backgroundColor: 'lightgreen',
+        margin: 2.5,
+    },
+    deleteBtn: {
+        backgroundColor: 'red',
+        margin: 2.5,
     },
     centered:{
         alignItems: 'center',
