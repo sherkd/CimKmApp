@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import * as DbRidesApi from '../../database/DbRidesApi'
-import DbRides from '../../database/DbGetRides'
 import { Button } from 'react-native-paper'
 
 function Item({ item, updateFunction, deleteFunction, refreshFunction  }) {
@@ -95,7 +94,8 @@ const styles = StyleSheet.create ({
         flex: 6,
     },
     bottom: {
-        flex: 2
+        flex: 1,
+        justifyContent: 'center',
     },
     boxView: {
         flex: 1,
@@ -121,7 +121,8 @@ const styles = StyleSheet.create ({
         flex: 4
     },
     itemContainerRight: {
-        flex: 2,
+        flex: 6,
+        flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
     },
