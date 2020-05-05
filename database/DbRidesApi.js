@@ -31,10 +31,11 @@ export async function getRides() {
                     rides.push(results.rows.item(i));
                 }
                 console.log(rides)
-                resolve(rides);
+                resolve(rides)
             })
-        });  
+        })
     })
+    // .catch(alert('Ophalen ritten mislukt probeer later opnieuw.'))
 }
 
 export async function insertRides(date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType) {
@@ -69,11 +70,10 @@ export async function updateRides(id) {
 }
 
 export async function deleteRide(id) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
         db.transaction((tx) => {
-            tx.executeSql('DELETE FROM rides WHERE id = ?', [id], function(tx, results) {
-            })
-        });  
+            tx.executeSql('DELETE FROM rides WHERE id = ?', [id])
+        })
     })
 }
 

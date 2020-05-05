@@ -1,22 +1,20 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, TextInput } from 'react-native'
-import * as DbRidesApi from '../../database/DbRidesApi'
+import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
+import * as DbAddressApi from '../../database/DbAddressesApi'
 
 function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction }) {
     return (
         <View style={styles.item}>
             <View style={styles.itemContainerLeft}>
-                <Text style={styles.itemTitle}>Van {item.fromAddress}</Text>
-                <Text style={styles.itemTitle}>Naar {item.toAddress}</Text>
-                <Text style={styles.itemText}>Afstand: {item.distance}</Text>
+                <Text style={styles.itemTitle}>Naam: {item.nickname}</Text>
+                <Text style={styles.itemText}>Adres: {item.street} {item.city} </Text>
+                <Text style={styles.itemText}>{item.country} {item.postalCode}</Text>
             </View>
             <View style={styles.itemContainerRight}> 
                 <View style={styles.itemContainerRightTop}>
-                    {/* <Button onPress={() => {updateFunction(item)}} style={styles.editBtn}><Text style={styles.itemText}>Wijzig</Text></Button> */}
-                    {/* <Button onPress={() => {modalFunction()}} style={styles.editBtn}><FontAwesome name="edit" color="black" size="16"/></Button> */}
                     <Button onPress={() => {updateFunction(item); refreshFunction()}} style={styles.editBtn}><FontAwesome name="edit" color="black" size="16"/></Button>
                     <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={styles.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
                 </View>
@@ -28,35 +26,35 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunc
     )
 }
 
-class RidesScreen extends Component {
+class AddressScreen extends Component {
     state = {
         data: [],
         isModalVisible: false,
         selectedItem: null,
     }
 
-    _getRides = async () => {
+    _getAddress = async () => {
         this.setState( {
-            data: await DbRidesApi.getRides()
+            data: await DbAddressApi.getAddresses()
         });
     }
 
-    _updateRide = async (item) => {
+    _updateAddress = async (item) => {
         console.log(item);
-        await DbRidesApi.updateRides(item.id);
+        await DbAddressApi.updateAddresses(item.id);
     }
 
-    _deleteRide = async (id) => {
-        await DbRidesApi.deleteRide(id);
+    _deleteAddress = async (id) => {
+        await DbAddressApi.deleteAddresses(id);
     }
-
+    
     _toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible});
-    }
+        this.setState({isModalVisible: !this.state.isModalVisible});
+    };
 
     componentDidMount = () => {
-        DbRidesApi.createRidesTable()
-        this._getRides()
+        DbAddressApi.createAddressTable()
+        this._getAddress()
     }
     
     componentDidUpdate = () => {
@@ -66,13 +64,13 @@ class RidesScreen extends Component {
     componentWillUnmount = () => {
 
     }
-   
+
     render() {
         return (
             <View style={styles.container}>
                 <View style={styles.top}>
                     <View style={styles.titleContainer}>
-                        <Text style={styles.title}>RIDES</Text>
+                        <Text style={styles.title}>ADDRESSES</Text>
                     </View>
                 </View>
                 <View style={styles.middle}>
@@ -80,40 +78,37 @@ class RidesScreen extends Component {
                         <FlatList
                             data={this.state.data}
                             renderItem={({ item }) => 
-                                <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} 
-                                refreshFunction = {this._getRides} modalFunction= {this._toggleModal} />}
+                                <Item item={item} updateFunction = {this._updateAddress} deleteFunction = {this._deleteAddress} 
+                                refreshFunction = {this._getAddress} modalFunction= {this._toggleModal} />}
                             keyExtractor={item => item.id}
                         />
                     </View>
                     
                 </View>
                 <View style={styles.bottom}>
-                    <Button onPress={() => {DbRidesApi.insertRides('a','a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
-                    <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
+                    <Button onPress={() => {DbAddressApi.insertAddresses('a','a','a','a','a','a'); this._getAddress()}}>Insert Table</Button>
+                    <Button onPress={() => {DbAddressApi.clearAddressesTable(); this._getAddress()}}>Clear Table</Button>
                 </View>
-                <Modal isVisible={this.state.isModalVisible}>
-                    <View style={styles.modalView}>
-                        <Text>Hello!</Text>
-                        <TextInput
-                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
-                            value="placeholder"
-                        />                  
-                        <Button onPress={this._toggleModal}>Close</Button>
-                    </View>
-                </Modal>
+                <View >
+                    <Modal isVisible={this.state.isModalVisible}>
+                        <View style={styles.modalView} >
+                            <Text>Hello!</Text>                  
+                            <Button onPress={this._toggleModal}>Close</Button>
+                        </View>
+                    </Modal>
+                </View>
             </View>
         )
     }
 }
-export default RidesScreen
+export default AddressScreen
 
 const styles = StyleSheet.create ({
     container: {
         flex: 1,
         borderWidth: 2,
         borderColor: 'red',
-        width: '100%'
+        width: '100%',
     },
     top: {
         flex: 1,
@@ -140,14 +135,16 @@ const styles = StyleSheet.create ({
         width: '40%',
         height: '70%',
     },
+    title: {
+        fontSize: 16,
+        fontWeight: "bold",    
+    },
     item: {
         flexDirection: "row",
         backgroundColor: 'silver',
         borderWidth: 2,
         padding: 10,
         margin: 10,
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     itemContainerLeft: {
         flex: 4,
@@ -155,21 +152,15 @@ const styles = StyleSheet.create ({
         borderColor: 'yellow'
     },
     itemContainerRight: {
-        // flex: 4,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'center',
+
         borderWidth: 2,
         borderColor: 'blue'
     },
     itemContainerRightTop: {
         flexDirection: 'row',
-        // borderWidth: 1,
-        // borderColor: 'red'
     },
     itemContainerRightBottom: {
-        // borderWidth: 1,
-        // borderColor: 'green'
+
     },
     itemTitle: {
         fontSize: 15,
@@ -203,7 +194,6 @@ const styles = StyleSheet.create ({
         borderWidth: 2, 
         borderColor: 'red',
         alignItems: 'center',
-        // justifyContent: 'center',
-        // height: '20%',
+        height: '20%',
     }, 
 })
