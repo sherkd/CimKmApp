@@ -4,29 +4,7 @@ import * as DbRidesApi from '../../database/DbRidesApi'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
-
-function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction }) {
-    return (
-        <View style={styles.item}>
-            <View style={styles.itemContainerLeft}>
-                <Text style={styles.itemTitle}>Van {item.fromAddress}</Text>
-                <Text style={styles.itemTitle}>Naar {item.toAddress}</Text>
-                <Text style={styles.itemText}>Afstand: {item.distance}</Text>
-            </View>
-            <View style={styles.itemContainerRight}> 
-                <View style={styles.itemContainerRightTop}>
-                    {/* <Button onPress={() => {updateFunction(item)}} style={styles.editBtn}><Text style={styles.itemText}>Wijzig</Text></Button> */}
-                    {/* <Button onPress={() => {modalFunction()}} style={styles.editBtn}><FontAwesome name="edit" color="black" size="16"/></Button> */}
-                    <Button onPress={() => {updateFunction(item); refreshFunction()}} style={styles.editBtn}><FontAwesome name="edit" color="black" size="16"/></Button>
-                    <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={styles.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
-                </View>
-                <View style={styles.itemContainerRightBottom}>
-                    <Button onPress={() => {modalFunction()}} style={styles.editBtn}><Text style={styles.itemText}>Bekijk</Text></Button>
-                </View>
-            </View>
-        </View>
-    )
-}
+import RidesItemStyle from '../../styles/RidesItem'
 
 class RidesScreen extends Component {
     state = {
@@ -51,7 +29,7 @@ class RidesScreen extends Component {
     }
 
     _toggleModal = () => {
-        this.setState({ isModalVisible: !this.state.isModalVisible});
+        this.setState({ isModalVisible: !this.state.isModalVisible})
     }
 
     componentDidMount = () => {
@@ -85,28 +63,54 @@ class RidesScreen extends Component {
                             keyExtractor={item => item.id}
                         />
                     </View>
-                    
                 </View>
                 <View style={styles.bottom}>
                     <Button onPress={() => {DbRidesApi.insertRides('a','a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
                     <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
                 </View>
-                <Modal isVisible={this.state.isModalVisible}>
-                    <View style={styles.modalView}>
-                        <Text>Hello!</Text>
-                        <TextInput
-                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
-                            value="placeholder"
-                        />                  
-                        <Button onPress={this._toggleModal}>Close</Button>
-                    </View>
-                </Modal>
+                <ViewModal visibleState={this.state.isModalVisible} modalFunction={this._toggleModal} />
             </View>
         )
     }
 }
 export default RidesScreen
+
+function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction }) {
+    return (
+        <View style={RidesItemStyle.item}>
+            <View style={RidesItemStyle.itemContainerLeft}>
+                <Text style={RidesItemStyle.itemTitle}>Van {item.fromAddress}</Text>
+                <Text style={RidesItemStyle.itemTitle}>Naar {item.toAddress}</Text>
+                <Text style={RidesItemStyle.itemText}>Afstand: {item.distance}</Text>
+            </View>
+            <View style={RidesItemStyle.itemContainerRight}> 
+                <View style={RidesItemStyle.itemContainerRightTop}>
+                    <Button onPress={() => {updateFunction(item); refreshFunction()}} style={RidesItemStyle.button}><FontAwesome name="edit" color="black" size="16"/></Button>
+                    <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
+                </View>
+                <View style={RidesItemStyle.itemContainerRightBottom}>
+                    <Button onPress={() => {modalFunction()}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
+                </View>
+            </View>
+        </View>
+    )
+}
+
+function ViewModal({visibleState, modalFunction}){
+    return (
+        <Modal isVisible={visibleState}>
+            <View style={styles.modalView}>
+                <Text>Hello!</Text>
+                <TextInput
+                    style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                    onChangeText={text => onChangeText(text)}
+                    value="placeholder"
+                />                  
+                <Button onPress={() => {modalFunction()}}>Close</Button>
+            </View>
+        </Modal>
+    )
+}
 
 const styles = StyleSheet.create ({
     container: {
@@ -140,58 +144,9 @@ const styles = StyleSheet.create ({
         width: '40%',
         height: '70%',
     },
-    item: {
-        flexDirection: "row",
-        backgroundColor: 'silver',
-        borderWidth: 2,
-        padding: 10,
-        margin: 10,
-        // alignItems: 'center',
-        // justifyContent: 'center',
-    },
-    itemContainerLeft: {
-        flex: 4,
-        borderWidth: 2,
-        borderColor: 'yellow'
-    },
-    itemContainerRight: {
-        // flex: 4,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        borderWidth: 2,
-        borderColor: 'blue'
-    },
-    itemContainerRightTop: {
-        flexDirection: 'row',
-        // borderWidth: 1,
-        // borderColor: 'red'
-    },
-    itemContainerRightBottom: {
-        // borderWidth: 1,
-        // borderColor: 'green'
-    },
-    itemTitle: {
-        fontSize: 15,
-        fontWeight: 'bold',
-    },
-    itemText: {
-        fontSize: 13,
-    },
     title: {
         fontSize: 16,
         fontWeight: "bold",    
-    },
-    button: {
-        backgroundColor: 'lightgreen',
-    },
-    editBtn: {
-        backgroundColor: 'lightgreen',
-        margin: 2.5,
-    },
-    deleteBtn: {
-        backgroundColor: 'red',
-        margin: 2.5,
     },
     centered:{
         alignItems: 'center',
