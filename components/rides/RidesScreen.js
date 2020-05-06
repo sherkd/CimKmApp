@@ -4,13 +4,14 @@ import * as DbRidesApi from '../../database/DbRidesApi'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
-import RidesItemStyle from '../../styles/RidesItem'
+import RidesItemStyle from '../../styles/RidesItemSS'
+import RidesViewModalStyle from '../../styles/RidesViewModalSS'
+import RidesUpdateModalStyle from '../../styles/RidesUpdateModalSS'
 
 class RidesScreen extends Component {
     state = {
         data: [],
         isModalVisible: false,
-        selectedItem: null,
     }
 
     _getRides = async () => {
@@ -20,7 +21,7 @@ class RidesScreen extends Component {
     }
 
     _updateRide = async (item) => {
-        console.log(item);
+        // console.log(item);
         await DbRidesApi.updateRides(item.id);
     }
 
@@ -28,7 +29,7 @@ class RidesScreen extends Component {
         await DbRidesApi.deleteRide(id);
     }
 
-    _toggleModal = () => {
+    _toggleModal = (item) => {
         this.setState({ isModalVisible: !this.state.isModalVisible})
     }
 
@@ -59,7 +60,7 @@ class RidesScreen extends Component {
                             data={this.state.data}
                             renderItem={({ item }) => 
                                 <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} 
-                                refreshFunction = {this._getRides} modalFunction= {this._toggleModal} />}
+                                refreshFunction = {this._getRides} modalFunction= {this._toggleModal} modalVisibility={this.state.isModalVisible}/>}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -68,14 +69,14 @@ class RidesScreen extends Component {
                     <Button onPress={() => {DbRidesApi.insertRides('a','a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
                     <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
                 </View>
-                <ViewModal visibleState={this.state.isModalVisible} modalFunction={this._toggleModal} />
+                {/* <ViewModal visibleState={this.state.isModalVisible} modalFunction={this._toggleModal} item={this.state.selectedItem} /> */}
             </View>
         )
     }
 }
 export default RidesScreen
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction }) {
+function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction, modalVisibility }) {
     return (
         <View style={RidesItemStyle.item}>
             <View style={RidesItemStyle.itemContainerLeft}>
@@ -89,24 +90,226 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunc
                     <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
                 </View>
                 <View style={RidesItemStyle.itemContainerRightBottom}>
-                    <Button onPress={() => {modalFunction()}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
+                    <Button onPress={() => {modalFunction(item)}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
                 </View>
             </View>
+            <ViewModal visibleState={modalVisibility} modalFunction={modalFunction} item={item} />
         </View>
     )
 }
 
-function ViewModal({visibleState, modalFunction}){
+function ViewModal({visibleState, modalFunction, item}){
+    console.log(item)
     return (
         <Modal isVisible={visibleState}>
-            <View style={styles.modalView}>
-                <Text>Hello!</Text>
-                <TextInput
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                    onChangeText={text => onChangeText(text)}
-                    value="placeholder"
-                />                  
-                <Button onPress={() => {modalFunction()}}>Close</Button>
+            <View style={RidesViewModalStyle.modalView}>
+                <View style={RidesViewModalStyle.full}>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Datum: </Text>
+                        <Text>{item.date}</Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Postcode startpunt: </Text>
+                        <Text> {item.fromPostalCode} </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Startpunt: </Text>
+                        <Text> {item.fromAddress}  </Text>
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Postcode bestemming: </Text>
+                        <Text> {item.toPostalCode}  </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Bestemming: </Text>
+                        <Text> {item.toAddress}  </Text>    
+                    </View>               
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel: </Text>
+                        <Text> {item.purposeType} </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel beschrijving: </Text>
+                        <Text> {item.purposeReason} </Text>    
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Reden voor omweg: </Text>
+                        <Text> {item.diversionReason} </Text>    
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Afstand: </Text>
+                        <Text> {item.distance} </Text>
+                    </View>
+                    <Button onPress={() => {modalFunction()}} style={RidesViewModalStyle.button}>Close</Button>
+                </View>      
+            </View>
+        </Modal>
+    )
+}
+
+function UpdateModal({visibleState, modalFunction}){
+    return (
+        <Modal isVisible={visibleState}>
+            <View style={RidesUpdateModalStyle.modalView}>
+                <View style={RidesUpdateModalStyle.full}>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Datum: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Postcode startpunt: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Startpunt: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Postcode bestemming: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Bestemming: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>               
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Reden voor omweg: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Afstand: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Close</Button>
+                </View>      
+            </View>
+        </Modal>
+    )
+}
+
+function InsertModal({visibleState, modalFunction}){
+    return (
+        <Modal isVisible={visibleState}>
+            <View style={RidesUpdateModalStyle.modalView}>
+                <View style={RidesUpdateModalStyle.full}>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Datum: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Postcode startpunt: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Startpunt: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Postcode bestemming: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Bestemming: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>               
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Reden voor omweg: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <View style={RidesUpdateModalStyle.row}>
+                        <Text style={styles.title}>Afstand: </Text>
+                        <TextInput
+                            style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            onChangeText={text => onChangeText(text)}
+                            value="placeholder"
+                        />    
+                    </View>
+                    <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Close</Button>
+                </View>      
             </View>
         </Modal>
     )
@@ -152,13 +355,4 @@ const styles = StyleSheet.create ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    modalView: {
-        backgroundColor: 'white', 
-        padding: '5%', 
-        borderWidth: 2, 
-        borderColor: 'red',
-        alignItems: 'center',
-        // justifyContent: 'center',
-        // height: '20%',
-    }, 
 })
