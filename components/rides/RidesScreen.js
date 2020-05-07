@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, TextInput } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert } from 'react-native'
 import * as DbRidesApi from '../../database/DbRidesApi'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
@@ -11,7 +11,8 @@ import RidesUpdateModalStyle from '../../styles/RidesUpdateModalSS'
 class RidesScreen extends Component {
     state = {
         data: [],
-        isModalVisible: false,
+        viewRideModalVisible: false,
+        editRideModalVisible: false,
     }
 
     _getRides = async () => {
@@ -29,8 +30,12 @@ class RidesScreen extends Component {
         await DbRidesApi.deleteRide(id);
     }
 
-    _toggleModal = (item) => {
-        this.setState({ isModalVisible: !this.state.isModalVisible})
+    _toggleViewRideModal = () => {
+        this.setState({ viewRideModalVisible: !this.state.viewRideModalVisible})
+    }
+
+    _toggleEditRideModal = () => {
+        this.setState({ editRideModalVisible: !this.state.editRideModalVisible})
     }
 
     componentDidMount = () => {
@@ -59,8 +64,9 @@ class RidesScreen extends Component {
                         <FlatList
                             data={this.state.data}
                             renderItem={({ item }) => 
-                                <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} 
-                                refreshFunction = {this._getRides} modalFunction= {this._toggleModal} modalVisibility={this.state.isModalVisible}/>}
+                                <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
+                                viewModalFunction= {this._toggleViewRideModal} editModalFunction= {this._toggleEditRideModal} 
+                                viewModalVisibility={this.state.viewRideModalVisible} editModalVisibility={this.state.editRideModalVisible}/>}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -76,7 +82,8 @@ class RidesScreen extends Component {
 }
 export default RidesScreen
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunction, modalVisibility }) {
+
+function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, editModalFunction, viewModalVisibility, editModalVisibility }) {
     return (
         <View style={RidesItemStyle.item}>
             <View style={RidesItemStyle.itemContainerLeft}>
@@ -90,16 +97,15 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, modalFunc
                     <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
                 </View>
                 <View style={RidesItemStyle.itemContainerRightBottom}>
-                    <Button onPress={() => {modalFunction(item)}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
+                    <Button onPress={() => {viewModalFunction()}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
                 </View>
             </View>
-            <ViewModal visibleState={modalVisibility} modalFunction={modalFunction} item={item} />
+            <ViewModal visibleState={viewModalVisibility} modalFunction={viewModalFunction} item={item} />
         </View>
     )
 }
 
 function ViewModal({visibleState, modalFunction, item}){
-    console.log(item)
     return (
         <Modal isVisible={visibleState}>
             <View style={RidesViewModalStyle.modalView}>
@@ -147,7 +153,7 @@ function ViewModal({visibleState, modalFunction, item}){
     )
 }
 
-function UpdateModal({visibleState, modalFunction}){
+function UpdateModal({visibleState, modalFunction, item}){
     return (
         <Modal isVisible={visibleState}>
             <View style={RidesUpdateModalStyle.modalView}>
