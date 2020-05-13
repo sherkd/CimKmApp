@@ -9,13 +9,19 @@ export default StyleSheet.create({
         padding: '1%',
         // margin: '1%'
     },
-    columnLeft: {
-        // alignItems: 'center',
+    btnRow:{
+        flexDirection: "row",
         justifyContent: 'center',
     },
+    columnLeft: {
+        flex: 1,
+        // alignItems: 'flex-start',
+        // justifyContent: 'center',
+    },
     columnRight: {
-        // alignItems: 'center',
-        justifyContent: 'center',
+        flex: 1,
+        // alignItems: 'flex-end',
+        // justifyContent: 'center',
     },
     modalView: {
         backgroundColor: 'white', 

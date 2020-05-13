@@ -19,13 +19,13 @@ export default StyleSheet.create({
     },
     modalView: {
         backgroundColor: 'white', 
-        padding: '5%', 
+        padding: '7.5%',
         borderWidth: 2, 
         borderColor: 'black',
         // alignItems: 'center',
         // justifyContent: 'center',
         height: '60%',
-        width: '101%'
+        width: '100%'
     }, 
     button: {
         justifyContent: 'flex-end',

@@ -12,7 +12,7 @@ class RidesScreen extends Component {
     state = {
         data: [],
         viewRideModalVisible: false,
-        editRideModalVisible: false,
+        updateRideModalVisible: false,
     }
 
     _getRides = async () => {
@@ -35,7 +35,7 @@ class RidesScreen extends Component {
     }
 
     _toggleEditRideModal = () => {
-        this.setState({ editRideModalVisible: !this.state.editRideModalVisible})
+        this.setState({ updateRideModalVisible: !this.state.updateRideModalVisible})
     }
 
     componentDidMount = () => {
@@ -65,8 +65,8 @@ class RidesScreen extends Component {
                             data={this.state.data}
                             renderItem={({ item }) => 
                                 <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
-                                viewModalFunction= {this._toggleViewRideModal} editModalFunction= {this._toggleEditRideModal} 
-                                viewModalVisibility={this.state.viewRideModalVisible} editModalVisibility={this.state.editRideModalVisible}/>}
+                                viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
+                                viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}/>}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -83,7 +83,7 @@ class RidesScreen extends Component {
 export default RidesScreen
 
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, editModalFunction, viewModalVisibility, editModalVisibility }) {
+function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, updateModalFunction, viewModalVisibility, updateModalVisibility }) {
     return (
         <View style={RidesItemStyle.item}>
             <View style={RidesItemStyle.itemContainerLeft}>
@@ -93,7 +93,7 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModal
             </View>
             <View style={RidesItemStyle.itemContainerRight}> 
                 <View style={RidesItemStyle.itemContainerRightTop}>
-                    <Button onPress={() => {updateFunction(item); refreshFunction()}} style={RidesItemStyle.button}><FontAwesome name="edit" color="black" size="16"/></Button>
+                    <Button onPress={() => {updateModalFunction(); refreshFunction()}} style={RidesItemStyle.button}><FontAwesome name="edit" color="black" size="16"/></Button>
                     <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
                 </View>
                 <View style={RidesItemStyle.itemContainerRightBottom}>
@@ -101,6 +101,7 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModal
                 </View>
             </View>
             <ViewModal visibleState={viewModalVisibility} modalFunction={viewModalFunction} item={item} />
+            <UpdateModal visibleState={updateModalVisibility} modalFunction={updateModalFunction} updateFunction={updateFunction} item={item} />
         </View>
     )
 }
@@ -119,7 +120,7 @@ function ViewModal({visibleState, modalFunction, item}){
                         <Text> {item.fromPostalCode} </Text> 
                     </View>
                     <View style={RidesViewModalStyle.row}>
-                        <Text style={styles.title}>Startpunt: </Text>
+                        <Text style={styles.title}>Startpunt adres: </Text>
                         <Text> {item.fromAddress}  </Text>
                     </View>
                     <View style={RidesViewModalStyle.row}>
@@ -127,7 +128,7 @@ function ViewModal({visibleState, modalFunction, item}){
                         <Text> {item.toPostalCode}  </Text> 
                     </View>
                     <View style={RidesViewModalStyle.row}>
-                        <Text style={styles.title}>Bestemming: </Text>
+                        <Text style={styles.title}>Bestemming adres: </Text>
                         <Text> {item.toAddress}  </Text>    
                     </View>               
                     <View style={RidesViewModalStyle.row}>
@@ -153,7 +154,21 @@ function ViewModal({visibleState, modalFunction, item}){
     )
 }
 
-function UpdateModal({visibleState, modalFunction, item}){
+function UpdateModal({visibleState, modalFunction, updateFunction, item}){
+    const [dateValue, setDateValue] = React.useState(item.date)
+    const [fromPostalCode, setFromPostalCodeValue] = React.useState(item.fromPostalCode)
+    const [fromAddress, setFromAddressValue] = React.useState(item.fromAddress)
+    var newItem = {
+        date : "",
+        fromPostalCode : "",
+        fromAddress : "",
+        toPostalCode : "",
+        toAddress : "",
+        purposeType : "",
+        purposeReason : "",
+        diversionReason : "",
+        distance : ""
+    }  
     return (
         <Modal isVisible={visibleState}>
             <View style={RidesUpdateModalStyle.modalView}>
@@ -163,7 +178,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.date}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -171,7 +186,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.fromPostalCode}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -179,7 +194,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.fromAddress}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -187,7 +202,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.toPostalCode}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -195,7 +210,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.toAddress}
                         />    
                     </View>               
                     <View style={RidesUpdateModalStyle.row}>
@@ -203,7 +218,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.purposeType}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -211,7 +226,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.purposeReason}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -219,7 +234,7 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.diversionReason}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -227,10 +242,17 @@ function UpdateModal({visibleState, modalFunction, item}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            defaultValue={item.distance}
                         />    
                     </View>
-                    <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Close</Button>
+                    <View style={RidesUpdateModalStyle.btnRow}>
+                        <View style={RidesUpdateModalStyle.columnLeft}>
+                            <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Save</Button>
+                        </View>
+                        <View style={RidesUpdateModalStyle.columnRight}>
+                            <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Cancel</Button>
+                        </View>                      
+                    </View>
                 </View>      
             </View>
         </Modal>
@@ -247,7 +269,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -255,7 +277,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -263,7 +285,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -271,7 +293,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -279,7 +301,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>               
                     <View style={RidesUpdateModalStyle.row}>
@@ -287,7 +309,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -295,7 +317,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -303,7 +325,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.row}>
@@ -311,7 +333,7 @@ function InsertModal({visibleState, modalFunction}){
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                             onChangeText={text => onChangeText(text)}
-                            value="placeholder"
+                            value=""
                         />    
                     </View>
                     <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Close</Button>
