@@ -73,9 +73,6 @@ export async function insertRides(date, distance, diversionReason, fromAddress, 
 }
 
 export async function updateRides(item) {
-    console.log('---------UPDATE---------')
-    console.log(item)
-    console.log('--------------------')
     return new Promise((resolve) => {
         db.transaction((tx) => {
             tx.executeSql( `UPDATE rides 
@@ -110,7 +107,6 @@ export async function clearRidesTable() {
             );
             tx.executeSql(
                 "DELETE FROM sqlite_sequence WHERE name='rides'"
-                // "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='rides'"
             );
             console.log("Clear Succesfull")
         } catch (error) {
