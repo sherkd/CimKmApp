@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, useState } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert } from 'react-native'
 import * as DbRidesApi from '../../database/DbRidesApi'
 import { Button } from 'react-native-paper'
@@ -7,23 +7,28 @@ import Modal from 'react-native-modal'
 import RidesItemStyle from '../../styles/RidesItemSS'
 import RidesViewModalStyle from '../../styles/RidesViewModalSS'
 import RidesUpdateModalStyle from '../../styles/RidesUpdateModalSS'
+import RidesModel from '../../models/RidesModel'
 
 class RidesScreen extends Component {
     state = {
         data: [],
         viewRideModalVisible: false,
         updateRideModalVisible: false,
+        selectedItem: Object,
     }
 
     _getRides = async () => {
         this.setState( {
             data: await DbRidesApi.getRides()
-        });
+        })
+    }
+
+    _getRideById = async (id) => {
+        await DbRidesApi.getRideById(id)
     }
 
     _updateRide = async (item) => {
-        // console.log(item);
-        await DbRidesApi.updateRides(item.id);
+        await DbRidesApi.updateRides(item);
     }
 
     _deleteRide = async (id) => {
@@ -38,13 +43,18 @@ class RidesScreen extends Component {
         this.setState({ updateRideModalVisible: !this.state.updateRideModalVisible})
     }
 
+    _onSelect = (item) => {
+        this.setState({ selectedItem: item })
+    }
+
     componentDidMount = () => {
         DbRidesApi.createRidesTable()
         this._getRides()
+        // this._getRideById(2)
     }
     
     componentDidUpdate = () => {
-
+        
     }
 
     componentWillUnmount = () => {
@@ -66,7 +76,8 @@ class RidesScreen extends Component {
                             renderItem={({ item }) => 
                                 <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
                                 viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
-                                viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}/>}
+                                viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}
+                                onSelect={this._onSelect} selectedItem={this.state.selectedItem}/>}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -75,7 +86,9 @@ class RidesScreen extends Component {
                     <Button onPress={() => {DbRidesApi.insertRides('a','a','a','a','a','a','a','a','a'); this._getRides()}}>Insert Table</Button>
                     <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
                 </View>
-                {/* <ViewModal visibleState={this.state.isModalVisible} modalFunction={this._toggleModal} item={this.state.selectedItem} /> */}
+                {/* <ViewModal visibleState={this.state.viewRideModalVisible} modalFunction={this._toggleViewRideModal} item={this.state.selectedItem} /> */}
+                {/* <UpdateModal visibleState={this.state.updateRideModalVisible} modalFunction={this._toggleEditRideModal} updateFunction={this._updateRide} 
+                    item={this.state.selectedItem}/>  */}
             </View>
         )
     }
@@ -83,7 +96,7 @@ class RidesScreen extends Component {
 export default RidesScreen
 
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, updateModalFunction, viewModalVisibility, updateModalVisibility }) {
+function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, updateModalFunction, viewModalVisibility, updateModalVisibility, onSelect, selectedItem }) {
     return (
         <View style={RidesItemStyle.item}>
             <View style={RidesItemStyle.itemContainerLeft}>
@@ -93,15 +106,15 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModal
             </View>
             <View style={RidesItemStyle.itemContainerRight}> 
                 <View style={RidesItemStyle.itemContainerRightTop}>
-                    <Button onPress={() => {updateModalFunction(); refreshFunction()}} style={RidesItemStyle.button}><FontAwesome name="edit" color="black" size="16"/></Button>
-                    <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size="16"/></Button>
+                    <Button onPress={() => {onSelect(item); updateModalFunction();}} style={RidesItemStyle.button}><FontAwesome name="edit" color="black" size={16}/></Button>
+                    <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={RidesItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size={16}/></Button>
                 </View>
                 <View style={RidesItemStyle.itemContainerRightBottom}>
-                    <Button onPress={() => {viewModalFunction()}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
+                    <Button onPress={() => {onSelect(item); viewModalFunction(); refreshFunction()}} style={RidesItemStyle.button}><Text style={RidesItemStyle.itemText}>Bekijk</Text></Button>
                 </View>
             </View>
-            <ViewModal visibleState={viewModalVisibility} modalFunction={viewModalFunction} item={item} />
-            <UpdateModal visibleState={updateModalVisibility} modalFunction={updateModalFunction} updateFunction={updateFunction} item={item} />
+            <ViewModal visibleState={viewModalVisibility} modalFunction={viewModalFunction} item={selectedItem} />
+            <UpdateModal visibleState={updateModalVisibility} modalFunction={updateModalFunction} updateFunction={updateFunction} item={selectedItem} refreshFunction={refreshFunction}/>
         </View>
     )
 }
@@ -112,6 +125,9 @@ function ViewModal({visibleState, modalFunction, item}){
             <View style={RidesViewModalStyle.modalView}>
                 <View style={RidesViewModalStyle.full}>
                     <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>ID: {item.id}</Text>
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
                         <Text style={styles.title}>Datum: </Text>
                         <Text>{item.date}</Text> 
                     </View>
@@ -121,15 +137,15 @@ function ViewModal({visibleState, modalFunction, item}){
                     </View>
                     <View style={RidesViewModalStyle.row}>
                         <Text style={styles.title}>Startpunt adres: </Text>
-                        <Text> {item.fromAddress}  </Text>
+                        <Text> {item.fromAddress} </Text>
                     </View>
                     <View style={RidesViewModalStyle.row}>
                         <Text style={styles.title}>Postcode bestemming: </Text>
-                        <Text> {item.toPostalCode}  </Text> 
+                        <Text> {item.toPostalCode} </Text> 
                     </View>
                     <View style={RidesViewModalStyle.row}>
                         <Text style={styles.title}>Bestemming adres: </Text>
-                        <Text> {item.toAddress}  </Text>    
+                        <Text> {item.toAddress} </Text>    
                     </View>               
                     <View style={RidesViewModalStyle.row}>
                         <Text style={styles.title}>Zakelijk doel: </Text>
@@ -154,21 +170,33 @@ function ViewModal({visibleState, modalFunction, item}){
     )
 }
 
-function UpdateModal({visibleState, modalFunction, updateFunction, item}){
-    const [dateValue, setDateValue] = React.useState(item.date)
-    const [fromPostalCode, setFromPostalCodeValue] = React.useState(item.fromPostalCode)
-    const [fromAddress, setFromAddressValue] = React.useState(item.fromAddress)
-    var newItem = {
-        date : "",
-        fromPostalCode : "",
-        fromAddress : "",
-        toPostalCode : "",
-        toAddress : "",
-        purposeType : "",
-        purposeReason : "",
-        diversionReason : "",
-        distance : ""
-    }  
+function UpdateModal({visibleState, modalFunction, updateFunction, item, refreshFunction}){
+    const [date, setDateValue] = useState(item.date)
+    const [fromPostalCode, setFromPostalCodeValue] = useState(item.fromPostalCode)
+    const [fromAddress, setFromAddressValue] = useState(item.fromAddress)
+    const [toPostalCode, setToPostalCodeValue] = useState(item.toAddress)
+    const [toAddress, setToAddressValue] = useState(item.toPostalCode)
+    const [purposeType, setPurposeTypeValue] = useState(item.purposeType)
+    const [purposeReason, setPurposeReasonTypeValue] = useState(item.purposeReason)
+    const [diversionReason, setDiversionReasonValue] = useState(item.diversionReason)
+    const [distance, setDistanceValue] = useState(item.distance)
+
+    const formValues = {date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType}
+
+    const fieldsValidator = (item, fields) => {
+        const completeField = new RidesModel()
+        completeField.id = item.id
+        for (let [key, value] of Object.entries(fields)) {
+            if (value == undefined) {
+                completeField[key] = item[key]
+            }
+            else{
+                completeField[key] = value
+            }
+        }
+        return completeField
+    }
+    
     return (
         <Modal isVisible={visibleState}>
             <View style={RidesUpdateModalStyle.modalView}>
@@ -177,7 +205,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Datum: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setDateValue(text)}
                             defaultValue={item.date}
                         />    
                     </View>
@@ -185,7 +213,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Postcode startpunt: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setFromPostalCodeValue(text)}
                             defaultValue={item.fromPostalCode}
                         />    
                     </View>
@@ -193,7 +221,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Startpunt: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setFromAddressValue(text)}
                             defaultValue={item.fromAddress}
                         />    
                     </View>
@@ -201,7 +229,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Postcode bestemming: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setToPostalCodeValue(text)}
                             defaultValue={item.toPostalCode}
                         />    
                     </View>
@@ -209,7 +237,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Bestemming: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setToAddressValue(text)}
                             defaultValue={item.toAddress}
                         />    
                     </View>               
@@ -217,7 +245,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Zakelijk doel: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setPurposeTypeValue(text)}
                             defaultValue={item.purposeType}
                         />    
                     </View>
@@ -225,7 +253,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setPurposeReasonTypeValue(text)}
                             defaultValue={item.purposeReason}
                         />    
                     </View>
@@ -233,7 +261,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Reden voor omweg: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setDiversionReasonValue(text)}
                             defaultValue={item.diversionReason}
                         />    
                     </View>
@@ -241,13 +269,13 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item}){
                         <Text style={styles.title}>Afstand: </Text>
                         <TextInput
                             style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                            onChangeText={text => onChangeText(text)}
+                            onChangeText={text => setDistanceValue(text)}
                             defaultValue={item.distance}
                         />    
                     </View>
                     <View style={RidesUpdateModalStyle.btnRow}>
                         <View style={RidesUpdateModalStyle.columnLeft}>
-                            <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Save</Button>
+                            <Button onPress={() => {updateFunction(fieldsValidator(item, formValues)); refreshFunction(); modalFunction()}} style={RidesUpdateModalStyle.button}>Save</Button>
                         </View>
                         <View style={RidesUpdateModalStyle.columnRight}>
                             <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Cancel</Button>
@@ -336,7 +364,14 @@ function InsertModal({visibleState, modalFunction}){
                             value=""
                         />    
                     </View>
-                    <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Close</Button>
+                    <View style={RidesUpdateModalStyle.btnRow}>
+                        <View style={RidesUpdateModalStyle.columnLeft}>
+                            <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Save</Button>
+                        </View>
+                        <View style={RidesUpdateModalStyle.columnRight}>
+                            <Button onPress={() => {modalFunction()}} style={RidesUpdateModalStyle.button}>Cancel</Button>
+                        </View>                      
+                    </View>
                 </View>      
             </View>
         </Modal>

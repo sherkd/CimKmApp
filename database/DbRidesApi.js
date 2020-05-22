@@ -1,4 +1,5 @@
 import * as SQLite from 'expo-sqlite';
+import RidesModel from '../models/RidesModel'
 
 const db = SQLite.openDatabase('CimKmApp.db')
 
@@ -38,6 +39,23 @@ export async function getRides() {
     // .catch(alert('Ophalen ritten mislukt probeer later opnieuw.'))
 }
 
+export async function getRideById(id) {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {    
+            tx.executeSql('SELECT * FROM rides WHERE id = ?', [id], function(tx, results) {
+                var item = results.rows.item(0)
+                const rideModel = new RidesModel(item.id, item.date, item.distance, item.diversionReason, item.fromAddress, item.fromPostalCode, item.toAddress, 
+                    item.toPostalCode, item.purposeReason, item.purposeType)
+                
+                console.log('----------RIDE BY ID-----------')
+                console.log(rideModel)
+                resolve(rideModel)
+            })
+        })
+    })
+    // .catch(alert('Ophalen ritten mislukt probeer later opnieuw.'))
+}
+
 export async function insertRides(date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType) {
     db.transaction(tx => {
         try {
@@ -54,10 +72,17 @@ export async function insertRides(date, distance, diversionReason, fromAddress, 
     })
 }
 
-export async function updateRides(id) {
+export async function updateRides(item) {
+    console.log('---------UPDATE---------')
+    console.log(item)
+    console.log('--------------------')
     return new Promise((resolve) => {
         db.transaction((tx) => {
-            tx.executeSql( 'UPDATE rides SET distance = ? WHERE id = ?', ["26", id], (tx, results) => {
+            tx.executeSql( `UPDATE rides 
+                            SET date = ?, distance = ?, diversionReason = ?, fromAddress = ?, fromPostalCode = ?, toAddress = ?, toPostalCode = ?, purposeReason = ?, purposeType = ?
+                            WHERE id = ?`, 
+                            [item.date, item.distance, item.diversionReason, item.fromAddress, item.fromPostalCode, item.toAddress, item.toPostalCode, item.purposeReason,
+                                item.purposeType, item.id], (tx, results) => {
                 console.log('Results', results.rowsAffected)
                 if(results.rowsAffected>0){
                     alert('Update Successfull')
