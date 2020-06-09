@@ -3,14 +3,12 @@ import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
 import * as Permissions from 'expo-permissions'
-
-const screenWidth = Math.round(Dimensions.get('window').width);
-const screenHeight = Math.round(Dimensions.get('window').height);
+import { Button } from 'react-native-paper'
+import GenericScreenStyle from '../../styles/GenericScreenSS'
 
 class HomeScreenMap extends Component {
     state = {
         watchID: Number,
-        errorMessage: '',
         region: {
             latitude: 0,
             longitude: 0,
@@ -25,15 +23,6 @@ class HomeScreenMap extends Component {
             postalCode: '',
             region: '',
             street: ''
-        }
-    }
-    
-    _askPermission = async () => {
-        let { status } = await Permissions.askAsync(Permissions.LOCATION);   
-        if (status !== 'granted') {
-            this.setState({
-                errorMessage: 'Permission to access location was denied',
-            });
         }
     }
 
@@ -56,7 +45,6 @@ class HomeScreenMap extends Component {
     }
 
    componentDidMount = () => {
-        this._askPermission()
         this.watchID = navigator.geolocation.watchPosition((position) => {
             this.setState({ 
                 region:{
@@ -82,9 +70,14 @@ class HomeScreenMap extends Component {
    
     render() {
         return (
-            <View style={styles.upperView}>
-                <MapView style={styles.mapStyleSmall} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>
-                {/* <MapView style={styles.mapStyleSmall} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} /> */}
+            <View style={GenericScreenStyle.full}>
+                <View style={styles.top}>
+                    <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>  
+                    {/* <MapView style={styles.mapStyleSmall} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} /> */}    
+                </View>
+                <View style={styles.bottom}>
+                    <Button>Stop</Button>
+                </View>
             </View>
         )
     }
@@ -92,13 +85,18 @@ class HomeScreenMap extends Component {
 export default HomeScreenMap
 
 const styles = StyleSheet.create ({
-    mapStyleSmall: {
-        width: screenWidth,
-        height: screenHeight,
+    mapStyle: {
+        width: '100%',
+        height: '100%',
     },
-    upperView:{
+    top:{
+        flex: 10,
+        // alignItems: 'center',
+        // justifyContent: 'center',
+    },
+    bottom:{
         flex: 1,
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
-      },
+    },
 })

@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import RidesModel from '../models/RidesModel'
+import RidesModel from '../../models/RidesModel'
 
 const db = SQLite.openDatabase('CimKmApp.db')
 
@@ -22,6 +22,15 @@ export async function createRidesTable(){
     });
 }
 
+export async function dropRidesTable(){
+    db.transaction(tx => {
+        tx.executeSql(
+            'DROP TABLE rides'
+        )
+    });
+    console.log('DROP SUCCESFULL')
+}
+
 export async function getRides() {
     return new Promise((resolve) => {
         db.transaction((tx) => {
@@ -31,12 +40,13 @@ export async function getRides() {
                 for (let i = 0; i < len; i++) {
                     rides.push(results.rows.item(i));
                 }
+                console.log('---------RIDES---------')
                 console.log(rides)
                 resolve(rides)
             })
         })
     })
-    // .catch(alert('Ophalen ritten mislukt probeer later opnieuw.'))
+    // .catch(alert('Ophalen van ritten mislukt probeer later opnieuw.'))
 }
 
 export async function getRideById(id) {
@@ -47,22 +57,21 @@ export async function getRideById(id) {
                 const rideModel = new RidesModel(item.id, item.date, item.distance, item.diversionReason, item.fromAddress, item.fromPostalCode, item.toAddress, 
                     item.toPostalCode, item.purposeReason, item.purposeType)
                 
-                console.log('----------RIDE BY ID-----------')
-                console.log(rideModel)
                 resolve(rideModel)
             })
         })
     })
-    // .catch(alert('Ophalen ritten mislukt probeer later opnieuw.'))
+    // .catch(alert('Ophalen van rit mislukt probeer later opnieuw.'))
 }
 
-export async function insertRides(date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType) {
+export async function insertRides(item) {
     db.transaction(tx => {
         try {
             tx.executeSql(
                 `
                 INSERT INTO rides (date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType)
-                VALUES ('${date}', '${distance}', '${diversionReason}', '${fromAddress}', '${fromPostalCode}', '${toAddress}', '${toPostalCode}', '${purposeReason}', '${purposeType}')
+                VALUES ('${item.date}', '${item.distance}', '${item.diversionReason}', '${item.fromAddress}', '${item.fromPostalCode}', '${item.toAddress}',
+                '${item.toPostalCode}', '${item.purposeReason}', '${item.purposeType}')
                 `
             );
             console.log("Insertion succesfull")
@@ -80,7 +89,6 @@ export async function updateRides(item) {
                             WHERE id = ?`, 
                             [item.date, item.distance, item.diversionReason, item.fromAddress, item.fromPostalCode, item.toAddress, item.toPostalCode, item.purposeReason,
                                 item.purposeType, item.id], (tx, results) => {
-                console.log('Results', results.rowsAffected)
                 if(results.rowsAffected>0){
                     alert('Update Successfull')
                 }else{

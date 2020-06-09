@@ -1,44 +1,53 @@
-import React from 'react'
-import { View, Text, StyleSheet, TextInput } from 'react-native'
-import * as DbRidesApi from '../../database/DbRidesApi'
+import React, { Component } from 'react'
+import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert } from 'react-native'
 import { Button } from 'react-native-paper'
 import Modal from 'react-native-modal'
-import GLOBAL from '../Global'
+import RidesViewModalStyle from '../styles/RidesViewModalSS'
 
-function toggleModal () {
-    console.log('before: '+GLOBAL.RVM_Visibility)
-    GLOBAL.RVM_Visibility = !GLOBAL.RVM_Visibility
-    console.log('after: '+GLOBAL.RVM_Visibility)
-    RidesViewModal(GLOBAL.RVM_Visibility)
-}
-
-export function RidesViewModal (visibility) {
-    
-    var visible = visibility['visibility']
-    console.log('inside: '+ visibility)
+export default function ViewModal({visibleState, modalFunction, item}){
     return (
-        <Modal isVisible={visible}>
-            <View style={styles.modalView}>
-                <Text>Hello!</Text>
-                <TextInput
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
-                    onChangeText={text => onChangeText(text)}
-                    value="placeholder"
-                />                  
-                <Button onPress={toggleModal}>Close</Button>
+        <Modal isVisible={visibleState}>
+            <View style={RidesViewModalStyle.modalView}>
+                <View style={RidesViewModalStyle.full}>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Datum: </Text>
+                        <Text>{item.date}</Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Postcode startpunt: </Text>
+                        <Text> {item.fromPostalCode} </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Startpunt adres: </Text>
+                        <Text> {item.fromAddress}  </Text>
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Postcode bestemming: </Text>
+                        <Text> {item.toPostalCode}  </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Bestemming adres: </Text>
+                        <Text> {item.toAddress}  </Text>    
+                    </View>               
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel: </Text>
+                        <Text> {item.purposeType} </Text> 
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Zakelijk doel beschrijving: </Text>
+                        <Text> {item.purposeReason} </Text>    
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Reden voor omweg: </Text>
+                        <Text> {item.diversionReason} </Text>    
+                    </View>
+                    <View style={RidesViewModalStyle.row}>
+                        <Text style={styles.title}>Afstand: </Text>
+                        <Text> {item.distance} </Text>
+                    </View>
+                    <Button onPress={() => {modalFunction()}} style={RidesViewModalStyle.button}>Close</Button>
+                </View>      
             </View>
         </Modal>
     )
 }
-
-const styles = StyleSheet.create ({
-    modalView: {
-        backgroundColor: 'white', 
-        padding: '5%', 
-        borderWidth: 2, 
-        borderColor: 'red',
-        alignItems: 'center',
-        // justifyContent: 'center',
-        // height: '20%',
-    }, 
-})

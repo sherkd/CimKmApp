@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, SectionList } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, FlatList } from 'react-native'
 import { Button } from 'react-native-paper';
 
 const DATA = [

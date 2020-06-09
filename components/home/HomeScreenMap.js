@@ -29,8 +29,9 @@ class HomeScreenMap extends Component {
         let { status } = await Permissions.askAsync(Permissions.LOCATION);   
         if (status !== 'granted') {
             this.setState({
-                errorMessage: 'Permission to access location was denied',
+                errorMessage: 'Toestemming voor locatievoorziening is afgewezen',
             });
+            alert(this.state.errorMessage)
         }
     }
 
@@ -83,7 +84,7 @@ class HomeScreenMap extends Component {
             <View style={styles.upperView}>
                 <MapView style={styles.mapStyleSmall} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>
                 {/* <MapView style={styles.mapStyleSmall} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} /> */}
-                <Text>{this.state.currentAddress.name}</Text>
+                <Text>{this.state.currentAddress.name}, {this.state.currentAddress.postalCode}</Text>
             </View>
         )
     }

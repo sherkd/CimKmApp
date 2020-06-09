@@ -3,10 +3,11 @@ import { StyleSheet, Text, View, Button, TextInput, SafeAreaView} from 'react-na
 import HomeScreenMap from '../components/home/HomeScreenMap'
 import HomeScreenQuickStart from '../components/home/HomeScreenQuickStart'
 // import { SafeAreaView } from 'react-native-safe-area-context';
+import GenericScreenStyle from '../styles/GenericScreenSS'
 
 export default function Home({ navigation }) {
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={GenericScreenStyle.safeAreaViewContainer}>
         <View style={styles.upper}>
           <HomeScreenMap />
         </View>
@@ -21,43 +22,19 @@ export default function Home({ navigation }) {
 }
   
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      // alignItems: 'center',
-      // justifyContent: 'center',
-      // borderColor: 'black',
-      // borderWidth: 2
-    },
     upper:{
       flex: 4,
       alignItems: 'center',
       justifyContent: 'center',
-      // borderColor: 'red',
       borderWidth: 2,
-      // margin: 1
     },
     middle:{
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      // borderColor: 'blue',
-      // borderWidth: 2,
-      // margin: 1
     },
     bottom:{
       flex: 3,
-      // alignItems: 'center',
-      // justifyContent: 'center',
-      // borderColor: 'green',
-      // borderWidth: 2,
       paddingBottom: 29
-    },
-    centered:{
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    button: {
-      
     }
 });

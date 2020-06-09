@@ -1,13 +1,14 @@
 import { StyleSheet } from 'react-native';
 
 export default StyleSheet.create({
-    full: {
+    modal: {
+        marginBottom: '10%'
+    },
+    form: {
         flex: 1,
-        // justifyContent: 'center',
     },
     row:{
         padding: '1%',
-        // margin: '1%'
     },
     columnLeft: {
         // alignItems: 'center',
@@ -17,14 +18,24 @@ export default StyleSheet.create({
         // alignItems: 'center',
         justifyContent: 'center',
     },
-    modalView: {
+    modalViewApple: {
+        backgroundColor: 'white', 
+        padding: '5%',
+        borderWidth: 2, 
+        borderColor: 'black',
+        // alignItems: 'center',
+        // justifyContent: 'center',
+        height: '65%',
+        width: '100%'
+    },
+    modalViewAndroid: {
         backgroundColor: 'white', 
         padding: '7.5%',
         borderWidth: 2, 
         borderColor: 'black',
         // alignItems: 'center',
         // justifyContent: 'center',
-        height: '60%',
+        height: '65%',
         width: '100%'
     }, 
     button: {

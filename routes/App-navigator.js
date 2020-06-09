@@ -9,22 +9,31 @@ import TrackingScreen from '../screens/Tracking'
 import RidesScreen from '../screens/Rides'
 import AddressesScreen from '../screens/Addresses'
 import PersonalScreen from '../screens/Personal'
+import PersonalInfoScreen from '../screens/PersonalInfo'
+import ExportScreen from '../screens/PersonalExport'
 
 const Tab = createMaterialBottomTabNavigator();
 const HomeStack = createStackNavigator();
+const PersonalStack = createStackNavigator();
 
 function HomeStackScreen() {
   return (
-    <HomeStack.Navigator 
-        screenOptions={{
-            headerShown: false,
-        }}
-    >
+    <HomeStack.Navigator screenOptions={{ headerShown: false }}>
       <HomeStack.Screen name="Home" component={HomeScreen}/>
       <HomeStack.Screen name="Tracking" component={TrackingScreen} />
     </HomeStack.Navigator>
   );
 }
+
+function PersonalStackScreen() {
+    return (
+      <PersonalStack.Navigator screenOptions={{ headerShown: false  }}>
+        <PersonalStack.Screen name="Persoonlijk Home" component={PersonalScreen}/>
+        <PersonalStack.Screen name="Persoonlijk Info" component={PersonalInfoScreen} />
+        <PersonalStack.Screen name="ExportToExcel" component={ExportScreen} />
+      </PersonalStack.Navigator>
+    );
+  }
 
 export default function AppNavigator() {
     return(
@@ -32,6 +41,7 @@ export default function AppNavigator() {
             <Tab.Navigator 
                 initialRouteName="Home"
                 activeColor="#e91e63"
+                // activeColor="red"
                 labelStyle={{ fontSize: 12 }}
                 barStyle={{ backgroundColor: 'lightgreen'}}
                 screenOptions= {{}}
@@ -62,7 +72,7 @@ export default function AppNavigator() {
                     name="Rides" 
                     component={RidesScreen} 
                     options={{
-                        tabBarLabel: 'Rides',
+                        tabBarLabel: 'Ritten',
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="car" color={color} size={20} />
                         ),
@@ -72,7 +82,7 @@ export default function AppNavigator() {
                     name="Addresses" 
                     component={AddressesScreen} 
                     options={{
-                        tabBarLabel: 'Addresses',
+                        tabBarLabel: 'Adressen',
                         tabBarIcon: ({ color, size }) => (
                             <CustomIcon name="folder-home" color={color} size={20} />
                         ),
@@ -80,9 +90,9 @@ export default function AppNavigator() {
                 />
                 <Tab.Screen 
                     name="Personal" 
-                    component={PersonalScreen} 
+                    component={PersonalStackScreen} 
                     options={{
-                        tabBarLabel: 'Personal',
+                        tabBarLabel: 'Persoonlijk',
                         tabBarIcon: ({ color, size }) => (
                             <MaterialCommunityIcons name="account" color={color} size={20} />
                         ),

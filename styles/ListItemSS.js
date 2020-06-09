@@ -15,33 +15,36 @@ export default StyleSheet.create({
         borderWidth: 2,
         borderColor: 'yellow'
     },
-    itemContainerRight: {
-        // flex: 4,
-        // flexDirection: 'row',
-        // alignItems: 'center',
-        // justifyContent: 'center',
+    itemContainerRightFourButtons: {
+        borderWidth: 2,
+        borderColor: 'blue'
+    },
+    itemContainerRightThreeButtons: {
+        flex: 3,
         borderWidth: 2,
         borderColor: 'blue'
     },
     itemContainerRightTop: {
         flexDirection: 'row',
-        // borderWidth: 1,
-        // borderColor: 'red'
     },
     itemContainerRightBottom: {
-        // borderWidth: 1,
-        // borderColor: 'green'
+        flexDirection: 'row',
     },
-    itemTitle: {
+    itemTextBold: {
         fontSize: 15,
         fontWeight: 'bold',
     },
     itemText: {
         fontSize: 13,
     },
+    iconBtn: {
+        backgroundColor: 'lightgreen',
+        margin: 2.5,
+    },
     button: {
         backgroundColor: 'lightgreen',
         margin: 2.5,
+        flex: 1,
     },
     deleteBtn: {
         backgroundColor: 'red',

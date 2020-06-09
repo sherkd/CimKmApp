@@ -1,24 +1,14 @@
 import React, { Component } from 'react'
 import { StyleSheet, Text, View, Button, TextInput, SafeAreaView } from 'react-native'
 import RidesScreen from '../components/rides/RidesScreen'
+import GenericScreenStyle from '../styles/GenericScreenSS'
 
 export default function Rides() {
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.full}>
+    <SafeAreaView style={GenericScreenStyle.safeAreaViewContainer}>
+      <View style={GenericScreenStyle.full}>
         <RidesScreen/>
       </View>
     </SafeAreaView>
   )
 }
-  
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  full:{
-    flex: 1,
-    alignItems: 'center',
-  },
-})
