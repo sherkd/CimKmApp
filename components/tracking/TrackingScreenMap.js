@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions, Button} from 'react-native'
+import { View, Text, StyleSheet, Dimensions } from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
-import * as Permissions from 'expo-permissions'
-// import { Button } from 'react-native-paper'
+import { Button } from 'react-native-paper'
 import GenericScreenStyle from '../../styles/GenericScreenSS'
 
 class HomeScreenMap extends Component {
@@ -23,7 +22,12 @@ class HomeScreenMap extends Component {
             postalCode: '',
             region: '',
             street: ''
-        }
+        },
+        startBtnVisibilty: true,
+    }
+
+    _toggleStartBtn = () =>{
+        this.setState({startBtnVisibilty: !this.state.startBtnVisibilty})
     }
 
     _getCurrentAddress = async (lat, long) => {
@@ -44,7 +48,7 @@ class HomeScreenMap extends Component {
         this.setState({ currentAddress })
     }
 
-   componentDidMount = () => {
+    _getRegion = () => {
         this.watchID = navigator.geolocation.watchPosition((position) => {
             this.setState({ 
                 region:{
@@ -54,14 +58,22 @@ class HomeScreenMap extends Component {
                     longitudeDelta: 0.0025,
                 }
             })
-            // this._getCurrentAddress(position.coords.latitude, position.coords.longitude)
         },
         (error) => alert(JSON.stringify(error)),
-        {enableHighAccuracy: true, timeout: 1000, maximumAge: 0, distanceFilter:2})
+        {enableHighAccuracy: true, timeout: 10000, maximumAge: 0, distanceFilter:2})
+    }
+
+    _LocationTest = async () => {
+        
+    }
+
+    componentDidMount = () => {
+        this._getRegion()
+        
     }
     
     componentDidUpdate = () => {
-        // this._getCurrentAddress(this.state.region["latitude"], this.state.region["longitude"])
+
     }
 
     componentWillUnmount = () => {
@@ -69,20 +81,41 @@ class HomeScreenMap extends Component {
     }
    
     render() {
-        return (
-            <View style={GenericScreenStyle.full}>
-                <View style={styles.top}>
-                    <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>  
-                    {/* <MapView style={styles.mapStyle} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} />     */}
-                </View>
-                <View style={GenericScreenStyle.bottom}>
-                    <View style={styles.btnRow}>
-                        <Button title='Start'>Start</Button>
-                        <Button title='Stop'>Stop</Button>
+        const startView = () => {
+            return (
+                    <Button style={styles.greenBtn} title='Start' onPress={() => {this._getCurrentAddress(this.state.region.latitude, this.state.region.longitude); this._toggleStartBtn()}}>Start</Button>
+            )
+        }
+        const stopView = () => {
+            return(
+                    <Button style={styles.redBtn} title='Stop' onPress={() => this._toggleStartBtn()}><Text style={styles.white}>Stop</Text></Button>
+            )
+        }
+
+        if (this.state.startBtnVisibilty) {
+            return (
+                <View style={GenericScreenStyle.full}>
+                    <View style={styles.top}>
+                        <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>  
+                    </View>
+                    <View style={GenericScreenStyle.bottom}> 
+                        {startView()}
                     </View>
                 </View>
-            </View>
-        )
+            )
+        } else {
+            return (
+                <View style={GenericScreenStyle.full}>
+                    <View style={styles.top}>
+                        <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>  
+                    </View>
+                    <View style={GenericScreenStyle.bottom}>
+                        <Text>{this.state.currentAddress.name}</Text>
+                        {stopView()}
+                    </View>
+                </View>
+            )
+        }
     }
 }
 export default HomeScreenMap
@@ -99,4 +132,15 @@ const styles = StyleSheet.create ({
         flexDirection: 'row',
         justifyContent: 'center'
     },
+    greenBtn:{
+        backgroundColor: 'lightgreen',
+        width: '50%'
+    },
+    redBtn: {
+        backgroundColor: 'red',
+        width: '50%',
+    },
+    white:{
+        color:'white'
+    }
 })
