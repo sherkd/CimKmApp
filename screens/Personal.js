@@ -14,7 +14,7 @@ export default function Personal({ navigation }) {
               </View>
           </View>
           <View style={styles.bottom}>
-              {/* <Button title='Persoonlijke Info' onPress={() => navigation.navigate('Persoonlijk Info')}></Button> */}
+              <Button title='Persoonlijke Info' onPress={() => navigation.navigate('Persoonlijk Info')}></Button>
               <Button title='Export naar Excel' onPress={() => navigation.navigate('ExportToExcel')}></Button>
               {/* <Button title='Verwijder data van ritten' onPress={() => navigation.navigate('Persoonlijk Info')}></Button> */}
               {/* <Button title='Bugs/Tips Reporter' onPress={() => navigation.navigate('Persoonlijk Info')}></Button> */}

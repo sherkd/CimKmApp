@@ -3,10 +3,6 @@ import { View, StyleSheet} from 'react-native'
 import Navigator from './routes/App-navigator.js'
 import { registerRootComponent, AppLoading } from 'expo';
 import * as Font from 'expo-font';
-import * as atob from 'atob'
-
-if (!global.atob) { global.atob = atob }
-
 
 class App extends Component {
   state = {

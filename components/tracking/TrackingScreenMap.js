@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { View, Text, StyleSheet, Dimensions } from 'react-native'
+import { View, Text, StyleSheet, Dimensions, Button} from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
 import * as Permissions from 'expo-permissions'
-import { Button } from 'react-native-paper'
+// import { Button } from 'react-native-paper'
 import GenericScreenStyle from '../../styles/GenericScreenSS'
 
 class HomeScreenMap extends Component {
@@ -73,10 +73,13 @@ class HomeScreenMap extends Component {
             <View style={GenericScreenStyle.full}>
                 <View style={styles.top}>
                     <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>  
-                    {/* <MapView style={styles.mapStyleSmall} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} /> */}    
+                    {/* <MapView style={styles.mapStyle} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} />     */}
                 </View>
-                <View style={styles.bottom}>
-                    <Button>Stop</Button>
+                <View style={GenericScreenStyle.bottom}>
+                    <View style={styles.btnRow}>
+                        <Button title='Start'>Start</Button>
+                        <Button title='Stop'>Stop</Button>
+                    </View>
                 </View>
             </View>
         )
@@ -91,12 +94,9 @@ const styles = StyleSheet.create ({
     },
     top:{
         flex: 10,
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
-    bottom:{
-        flex: 1,
-        // alignItems: 'center',
-        justifyContent: 'center',
+    btnRow:{
+        flexDirection: 'row',
+        justifyContent: 'center'
     },
 })

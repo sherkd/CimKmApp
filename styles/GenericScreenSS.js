@@ -26,6 +26,7 @@ export default StyleSheet.create({
     bottom: {
         flex: 1,
         justifyContent: 'center',
+        // alignItems: 'center',
     },
     boxView: {
         flex: 1,

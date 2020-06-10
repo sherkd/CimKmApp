@@ -16,5 +16,10 @@ export default StyleSheet.create({
         flex: 1,
         backgroundColor: "white",
         height: 16
+    },
+    textInputGrey : {
+        flex: 1,
+        backgroundColor: "grey",
+        height: 16
     }
 });

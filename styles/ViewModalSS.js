@@ -30,12 +30,12 @@ export default StyleSheet.create({
     },
     modalViewAndroid: {
         backgroundColor: 'white', 
-        padding: '7.5%',
+        padding: '5%',
         borderWidth: 2, 
         borderColor: 'black',
         // alignItems: 'center',
         // justifyContent: 'center',
-        height: '65%',
+        height: '85%',
         width: '100%'
     }, 
     button: {

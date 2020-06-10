@@ -101,7 +101,7 @@ class RidesScreen extends Component {
                 </View>
                 <View style={styles.bottom}>
                     <Button onPress={() => {this._toggleInsertRideModal()}}>Handmatig toevoegen</Button>
-                    <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button>
+                    {/* <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button> */}
                     {/* <Button onPress={() => {DbRidesApi.dropRidesTable(); this._getRides()}}>Drop Table</Button> */}
                 </View>
                 <InsertModal visibleState={this.state.insertRideModalVisible} modalFunction={this._toggleInsertRideModal} insertFunction={this._insertRide} 
@@ -140,13 +140,9 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, insertFun
 }
 
 function ViewModal({visibleState, modalFunction, item}){
-    return (
-        <Modal isVisible={visibleState} style={ViewModalStyle.modal}>
-            <View style={ViewModalStyle.modalViewApple}>
-                <View style={ViewModalStyle.form}>
-                    <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>ID: {item.id}</Text>
-                    </View>
+    const form = () => {
+        return (
+            <View style={ViewModalStyle.form}>
                     <View style={ViewModalStyle.row}>
                         <Text style={styles.title}>Datum: </Text>
                         <Text>{item.date}</Text> 
@@ -185,9 +181,27 @@ function ViewModal({visibleState, modalFunction, item}){
                     </View>
                     <Button onPress={() => {modalFunction()}} style={ViewModalStyle.button}>Close</Button>
                 </View>      
-            </View>
-        </Modal>
-    )
+        )
+    }
+
+    if (Platform.OS === 'ios') {
+        return (
+            <Modal isVisible={visibleState} style={ViewModalStyle.modal}>
+                <View style={ViewModalStyle.modalViewApple}>
+                    {form()}
+                </View>
+            </Modal>
+        )
+    } else {
+        return (
+            <Modal isVisible={visibleState} style={ViewModalStyle.modal}>
+                <View style={ViewModalStyle.modalViewAndroid}>
+                    {form()}
+                </View>
+            </Modal>
+        )
+    }
+    
 }
 
 function UpdateModal({visibleState, modalFunction, updateFunction, item, refreshFunction}){

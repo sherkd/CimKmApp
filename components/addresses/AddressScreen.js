@@ -93,7 +93,7 @@ class AddressScreen extends Component {
                 </View>
                 <View style={styles.bottom}>
                     <Button onPress={() => {this._toggleInsertAddressModal()}}>Handmatig toevoegen</Button>
-                    <Button onPress={() => {DbAddressApi.clearAddressesTable(); this._getAddress()}}>Clear Table</Button>
+                    {/* <Button onPress={() => {DbAddressApi.clearAddressesTable(); this._getAddress()}}>Clear Table</Button> */}
                 </View>
                 <InsertModal visibleState={this.state.insertAddressModalVisible} modalFunction={this._toggleInsertAddressModal} insertFunction={this._insertAddress} 
                     refreshFunction={this._getAddress}/>
@@ -133,9 +133,6 @@ function ViewModal({visibleState, modalFunction, item}){
         <Modal isVisible={visibleState} style={ViewModalStyle.modal}>
             <View style={ViewModalStyle.modalViewApple}>
                 <View style={ViewModalStyle.form}>
-                    <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>ID: {item.id}</Text>
-                    </View>
                     <View style={ViewModalStyle.row}>
                         <Text style={styles.title}>Bijnaam: </Text>
                         <Text>{item.nickname}</Text> 
