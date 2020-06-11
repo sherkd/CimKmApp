@@ -3,6 +3,7 @@ import { View, Text, StyleSheet} from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
 import * as Permissions from 'expo-permissions'
+import GenericScreenStyle from '../../styles/GenericScreenSS'
 
 class HomeScreenMap extends Component {
     state = {
@@ -51,7 +52,6 @@ class HomeScreenMap extends Component {
             street: address[0].street
         } 
         this.setState({ currentAddress })
-        // console.log('Address: ', address)
     }
 
    componentDidMount = () => {
@@ -84,7 +84,7 @@ class HomeScreenMap extends Component {
             <View style={styles.upperView}>
                 <MapView style={styles.mapStyleSmall} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>
                 {/* <MapView style={styles.mapStyleSmall} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region} /> */}
-                <Text>{this.state.currentAddress.name}, {this.state.currentAddress.postalCode}</Text>
+                <Text style={GenericScreenStyle.bold} >{this.state.currentAddress.name}, {this.state.currentAddress.postalCode}</Text>
             </View>
         )
     }

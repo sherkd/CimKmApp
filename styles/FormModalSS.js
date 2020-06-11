@@ -10,7 +10,7 @@ export default StyleSheet.create({
     row:{
         padding: '1%',
     },
-    btnRow:{
+    formRow:{
         flexDirection: "row",
     },
     columnLeft: {
@@ -23,13 +23,17 @@ export default StyleSheet.create({
         backgroundColor: 'white', 
         paddingHorizontal: '3%',
         paddingTop: '3%',
-        // padding: '2%',
         borderWidth: 2, 
-        borderColor: 'black',
-        // alignItems: 'flex-start',
-        // justifyContent: 'flex-start',
         height: '55%',
-        width: '101%',
+        width: '100%',
+    }, 
+    modalViewAndroid: {
+        backgroundColor: 'white', 
+        paddingHorizontal: '3%',
+        paddingTop: '3%',
+        borderWidth: 2, 
+        height: '90%',
+        width: '100%',
     }, 
     button: {
         justifyContent: 'flex-end',
@@ -37,5 +41,15 @@ export default StyleSheet.create({
     },
     datePicker: {
         width: '100%',
+    },
+    textInput: {
+        height: 40, 
+        borderColor: 'gray', 
+        borderWidth: 1
+    },
+    textInputMultiline: {
+        height: 80, 
+        borderColor: 'gray', 
+        borderWidth: 1
     }
 });

@@ -22,9 +22,6 @@ export default StyleSheet.create({
         backgroundColor: 'white', 
         padding: '5%',
         borderWidth: 2, 
-        borderColor: 'black',
-        // alignItems: 'center',
-        // justifyContent: 'center',
         height: '65%',
         width: '100%'
     },
@@ -32,10 +29,7 @@ export default StyleSheet.create({
         backgroundColor: 'white', 
         padding: '5%',
         borderWidth: 2, 
-        borderColor: 'black',
-        // alignItems: 'center',
-        // justifyContent: 'center',
-        height: '85%',
+        height: '90%',
         width: '100%'
     }, 
     button: {

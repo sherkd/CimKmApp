@@ -1,5 +1,5 @@
 import React from 'react'
-import { StyleSheet, Text, View, Button, SafeAreaView} from 'react-native'
+import { View, SafeAreaView} from 'react-native'
 import TrackingScreenMap from '../components/tracking/TrackingScreenMap'
 import GenericScreenStyle from '../styles/GenericScreenSS'
 

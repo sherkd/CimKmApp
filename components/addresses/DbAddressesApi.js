@@ -27,8 +27,6 @@ export async function getAddresses() {
                 for (let i = 0; i < len; i++) {
                     addresses.push(results.rows.item(i));
                 }
-                console.log('----------ADDRESSES-----------')
-                console.log(addresses)
                 resolve(addresses)
             })
         })

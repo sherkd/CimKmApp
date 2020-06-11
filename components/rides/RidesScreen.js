@@ -1,6 +1,7 @@
 import React, { Component, useState } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert, Platform } from 'react-native'
 import * as DbRidesApi from '../rides/DbRidesApi'
+import * as GlobalVariables from '../Global'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
@@ -10,7 +11,9 @@ import FormModalStyle from '../../styles/FormModalSS'
 import RidesModel from '../../models/RidesModel'
 import { ScrollView } from 'react-native-gesture-handler'
 import DatePicker from 'react-native-datepicker'
+import RNDatePicker from '@react-native-community/datetimepicker' 
 import { format } from 'date-fns';
+import { Dropdown } from 'react-native-material-dropdown';
 
 class RidesScreen extends Component {
     state = {
@@ -41,7 +44,8 @@ class RidesScreen extends Component {
 
     _copyRide = async (item) => {
         const copy = item
-        //TODO: increase date by 1 day then insert
+        var parts = item.date.split('-');
+        copy.date = (parseInt(parts[0])+1 + '-' + parseInt(parts[1]) + '-' + parts[2])
         await DbRidesApi.insertRides(copy);
     }
 
@@ -69,14 +73,6 @@ class RidesScreen extends Component {
         DbRidesApi.createRidesTable()
         this._getRides()
     }
-    
-    componentDidUpdate = () => {
-        
-    }
-
-    componentWillUnmount = () => {
-
-    }
    
     render() {
         return (
@@ -92,7 +88,7 @@ class RidesScreen extends Component {
                             data={this.state.data}
                             renderItem={({ item }) => 
                                 <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
-                                insertFunction={this._insertRide} viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
+                                viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
                                 viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}
                                 onSelect={this._onSelect} selectedItem={this.state.selectedItem} copyFunction= {this._copyRide}/>}
                             keyExtractor={item => item.id}
@@ -113,7 +109,7 @@ class RidesScreen extends Component {
 export default RidesScreen
 
 
-function Item({ item, updateFunction, deleteFunction, refreshFunction, insertFunction, viewModalFunction, 
+function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModalFunction, 
                 updateModalFunction, viewModalVisibility, updateModalVisibility, onSelect, selectedItem, copyFunction}) {
     return (
         <View style={ListItemStyle.item}>
@@ -214,7 +210,8 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
     const [purposeReason, setPurposeReasonType] = useState(item.purposeReason)
     const [diversionReason, setDiversionReason] = useState(item.diversionReason)
     const [distance, setDistance] = useState(item.distance)
-
+  
+    const purposeTypes = [{value: 'Woon-Werk'}, {value: 'Klantbezoek'}, {value: 'Zakelijke bijeenkomst'}, {value: 'I.o.v. CIMSOLUTIONS'}, {value: 'Examen/cursus'}, {value: 'Onderhoud'}]
     const formValues = {date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType}
 
     const fieldsValidator = (item, fields) => {
@@ -231,36 +228,35 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
         return completeField
     }
     
-    return (
-        <Modal isVisible={visibleState} style={FormModalStyle.modal}> 
-            <View style={FormModalStyle.modalView}>
+    const modalContent = () => {
+        return (
                 <ScrollView>
                     <View style={FormModalStyle.form}>
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Datum: </Text>
-                            <DatePicker
-                                style={FormModalStyle.datePicker}
-                                date={date ? date : item.date}
-                                mode="date"
-                                placeholder="select date"
-                                format="DD-MM-YYYY"
-                                minDate="01-01-2019"
-                                maxDate="01-01-2030"
-                                confirmBtnText="Bevestig"
-                                cancelBtnText="Annuleer"
-                                customStyles={{
-                                    dateIcon: {},
-                                    dateInput: {
-                                        borderColor: 'black'
-                                    }
-                                }}
-                                onDateChange={(date) => setDate(date)}
-                            />    
+                              <DatePicker
+                                    style={FormModalStyle.datePicker}
+                                    date={date ? date : item.date}
+                                    mode="date"
+                                    placeholder="select date"
+                                    format="DD-MM-YYYY"
+                                    minDate="01-01-2019"
+                                    maxDate="01-01-2030"
+                                    confirmBtnText="Bevestig"
+                                    cancelBtnText="Annuleer"
+                                    customStyles={{
+                                        dateIcon: {},
+                                        dateInput: {
+                                            borderColor: 'black'
+                                        }
+                                    }}
+                                    onDateChange={(date) => setDate(date)}
+                                />  
                         </View>
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Postcode startpunt: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setFromPostalCode(text)}
                                 defaultValue={item.fromPostalCode}
                             />    
@@ -268,7 +264,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Startpunt: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setFromAddress(text)}
                                 defaultValue={item.fromAddress}
                             />    
@@ -276,7 +272,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Postcode bestemming: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setToPostalCode(text)}
                                 defaultValue={item.toPostalCode}
                             />    
@@ -284,23 +280,25 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Bestemming: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setToAddress(text)}
                                 defaultValue={item.toAddress}
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Zakelijk doel: </Text>
-                            <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            <Text>Huidig doel: {item.purposeType}</Text>
+                            <Dropdown 
+                                label='Nieuw doel' 
+                                data={purposeTypes}
+                                labelFontSize={16}
                                 onChangeText={text => setPurposeType(text)}
-                                defaultValue={item.purposeType}
-                            />    
+                            />
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
+                            <Text style={styles.title}>Zakelijk doel beschrijving: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setPurposeReasonType(text)}
                                 defaultValue={item.purposeReason}
                             />    
@@ -308,7 +306,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Reden voor omweg: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setDiversionReason(text)}
                                 defaultValue={item.diversionReason}
                             />    
@@ -316,25 +314,53 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Afstand: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setDistance(text)}
                                 defaultValue={item.distance}
                             />    
                         </View>
                     </View>    
                 </ScrollView>  
-                <View style={FormModalStyle.btnRow}>
-                    <View style={FormModalStyle.columnLeft}>
-                        <Button onPress={() => {updateFunction(fieldsValidator(item, formValues)); refreshFunction(); modalFunction()}} 
-                            style={FormModalStyle.button}>Opslaan</Button>
+                
+        )
+    }
+
+    if (Platform.OS === 'ios') {
+        return (
+            <Modal isVisible={visibleState} style={FormModalStyle.modal}>
+                <View style={FormModalStyle.modalView}>
+                    {modalContent()}
+                
+                    <View style={FormModalStyle.formRow}>
+                        <View style={FormModalStyle.columnLeft}>
+                            <Button onPress={() => {updateFunction(fieldsValidator(item, formValues)); refreshFunction(); modalFunction()}} 
+                                style={FormModalStyle.button}>Opslaan</Button>
+                        </View>
+                        <View style={FormModalStyle.columnRight}>
+                            <Button onPress={() => {modalFunction()}} style={FormModalStyle.button}>Annuleren</Button>
+                        </View>                      
                     </View>
-                    <View style={FormModalStyle.columnRight}>
-                        <Button onPress={() => {modalFunction()}} style={FormModalStyle.button}>Annuleren</Button>
-                    </View>                      
+                </View> 
+            </Modal>
+        )
+    } else {
+        return (
+            <Modal isVisible={visibleState} > 
+                <View style={FormModalStyle.modalViewAndroid}>
+                    {modalContent()}
+                    <View style={FormModalStyle.formRow}>
+                        <View style={FormModalStyle.columnLeft}>
+                            <Button onPress={() => {updateFunction(fieldsValidator(item, formValues)); refreshFunction(); modalFunction()}} 
+                                style={FormModalStyle.button}>Opslaan</Button>
+                        </View>
+                        <View style={FormModalStyle.columnRight}>
+                            <Button onPress={() => {modalFunction()}} style={FormModalStyle.button}>Annuleren</Button>
+                        </View>                      
+                    </View>
                 </View>
-            </View>
-        </Modal>
-    )
+            </Modal>
+        )
+    }
 }
 
 function InsertModal({visibleState, modalFunction, insertFunction, refreshFunction}){
@@ -348,6 +374,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
     const [diversionReason, setDiversionReason] = useState('')
     const [distance, setDistance] = useState('')
 
+    const purposeTypes = [{value: 'Woon-Werk'}, {value: 'Klantbezoek'}, {value: 'Zakelijke bijeenkomst'}, {value: 'I.o.v. CIMSOLUTIONS'}, {value: 'Examen/cursus'}, {value: 'Onderhoud'}]
     const formValues = {date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType}
 
     const fieldsValidator = (fields) => {
@@ -392,7 +419,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Postcode startpunt: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setFromPostalCode(text)}
                                 defaultValue=""
                             />    
@@ -400,7 +427,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Startpunt: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setFromAddress(text)}
                                 defaultValue=""
                             />    
@@ -408,7 +435,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Postcode bestemming: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setToPostalCode(text)}
                                 defaultValue=""
                             />    
@@ -416,23 +443,24 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Bestemming: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setToAddress(text)}
                                 defaultValue=""
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Zakelijk doel: </Text>
-                            <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                            <Dropdown 
+                                label='Type doel' 
+                                data={purposeTypes}
+                                labelFontSize={16}
                                 onChangeText={text => setPurposeType(text)}
-                                defaultValue=""
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setPurposeReasonType(text)}
                                 defaultValue=""
                             />    
@@ -440,7 +468,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Reden voor omweg: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setDiversionReason(text)}
                                 defaultValue=""
                             />    
@@ -448,14 +476,14 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         <View style={FormModalStyle.row}>
                             <Text style={styles.title}>Afstand: </Text>
                             <TextInput
-                                style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
+                                style={FormModalStyle.textInput}
                                 onChangeText={text => setDistance(text)}
                                 defaultValue=""
                             />    
                         </View>
                     </View>
                 </ScrollView>    
-                <View style={FormModalStyle.btnRow}>
+                <View style={FormModalStyle.formRow}>
                     <View style={FormModalStyle.columnLeft}>
                         <Button onPress={() => {insertFunction(fieldsValidator(formValues)); refreshFunction(); modalFunction()}} 
                             style={FormModalStyle.button}>Save</Button>

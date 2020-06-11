@@ -40,8 +40,6 @@ export async function getRides() {
                 for (let i = 0; i < len; i++) {
                     rides.push(results.rows.item(i));
                 }
-                console.log('---------RIDES---------')
-                console.log(rides)
                 resolve(rides)
             })
         })
@@ -64,31 +62,30 @@ export async function getRideById(id) {
     // .catch(alert('Ophalen van rit mislukt probeer later opnieuw.'))
 }
 
-export async function insertRides(item) {
+export async function insertRides(ride) {
     db.transaction(tx => {
         try {
             tx.executeSql(
                 `
                 INSERT INTO rides (date, distance, diversionReason, fromAddress, fromPostalCode, toAddress, toPostalCode, purposeReason, purposeType)
-                VALUES ('${item.date}', '${item.distance}', '${item.diversionReason}', '${item.fromAddress}', '${item.fromPostalCode}', '${item.toAddress}',
-                '${item.toPostalCode}', '${item.purposeReason}', '${item.purposeType}')
+                VALUES ('${ride.date}', '${ride.distance}', '${ride.diversionReason}', '${ride.fromAddress}', '${ride.fromPostalCode}', '${ride.toAddress}',
+                '${ride.toPostalCode}', '${ride.purposeReason}', '${ride.purposeType}')
                 `
             );
-            console.log("Insertion succesfull")
         } catch (error) {
             console.error(error)
         }
     })
 }
 
-export async function updateRides(item) {
+export async function updateRides(ride) {
     return new Promise((resolve) => {
         db.transaction((tx) => {
             tx.executeSql( `UPDATE rides 
                             SET date = ?, distance = ?, diversionReason = ?, fromAddress = ?, fromPostalCode = ?, toAddress = ?, toPostalCode = ?, purposeReason = ?, purposeType = ?
                             WHERE id = ?`, 
-                            [item.date, item.distance, item.diversionReason, item.fromAddress, item.fromPostalCode, item.toAddress, item.toPostalCode, item.purposeReason,
-                                item.purposeType, item.id], (tx, results) => {
+                            [ride.date, ride.distance, ride.diversionReason, ride.fromAddress, ride.fromPostalCode, ride.toAddress, ride.toPostalCode, ride.purposeReason,
+                                ride.purposeType, ride.id], (tx, results) => {
                 if(results.rowsAffected>0){
                     alert('Update Successfull')
                 }else{

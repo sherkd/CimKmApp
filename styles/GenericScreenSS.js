@@ -53,6 +53,9 @@ export default StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",    
     },
+    bold: {
+        fontWeight: "bold",    
+    },
     centered:{
         alignItems: 'center',
         justifyContent: 'center',

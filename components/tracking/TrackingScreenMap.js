@@ -1,35 +1,52 @@
-import React, { Component } from 'react'
-import { View, Text, StyleSheet } from 'react-native'
+import React, { Component, useState } from 'react'
+import { View, Text, StyleSheet, ScrollView, TextInput} from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
 import { Button } from 'react-native-paper'
 import GenericScreenStyle from '../../styles/GenericScreenSS'
+import ViewModalStyle from '../../styles/ViewModalSS'
+import FormModalStyle from '../../styles/FormModalSS'
+import { Dropdown } from 'react-native-material-dropdown';
 import * as geolib from 'geolib'
+import Modal from 'react-native-modal'
+import RidesModel from '../../models/RidesModel'
+import { format } from 'date-fns';
+import * as DbRidesApi from '../rides/DbRidesApi'
 
-class HomeScreenMap extends Component {
+class TrackingScreenMap extends Component {
     state = {
         watchID: Number,
         locations: [],
         isNavigating: false,
         navigationTracker: null,
         initialLocation: null,
-        endLocation: null,
+        finalLocation: null,
+        rideDistance: 'Afstand Ophalen...',
+        optimalDistance: 'Afstand Ophalen...',
         region: {
             latitude: 0,
             longitude: 0,
             latitudeDelta: 0.0025,
             longitudeDelta: 0.0025
         },
+        initialAddress: {
+            name: 'Adres Ophalen...',
+            postalCode: 'Postcode Ophalen...',
+        },
         currentAddress: {
-            city: '',
-            country: '',
-            isoCountryCode: '',
-            name: '',
-            postalCode: '',
-            region: '',
-            street: ''
+            name: 'Adres Ophalen...',
+            postalCode: 'Postcode Ophalen...',
+        },
+        finalAddress: {
+            name: 'Adres Ophalen...',
+            postalCode: 'Postcode Ophalen...',
         },
         startBtnVisibilty: true,
+        modalVisibility: false,
+    }
+
+    _insertRide = async (ride) => {
+        await DbRidesApi.insertRides(ride);
     }
 
     _toggleStartBtn = async () =>{
@@ -45,9 +62,10 @@ class HomeScreenMap extends Component {
         this.state.isNavigating = false;
         this.state.navigationTracker = null;
 
-        this.state.endLocation = await this._getCurrentPosition()
-        console.log('EndLoc: ')
-        console.log(this.state.endLocation)
+        this.state.finalLocation = await this._getCurrentPosition()
+
+        await this._getCurrentAddress(this.state.finalLocation)
+        this.setState({finalAddress: this.state.currentAddress})
 
         this._calculateDistance();
     }
@@ -66,12 +84,8 @@ class HomeScreenMap extends Component {
         return position
     }
 
-    _getCurrentAddress = async (lat, long) => {
-        let location = {
-            latitude: lat,
-            longitude: long
-        }
-        let address = await Location.reverseGeocodeAsync(location)
+    _getCurrentAddress = async (position) => {
+        let address = await Location.reverseGeocodeAsync(position)
         let currentAddress = {
             city: address[0].city,
             country: address[0].country,
@@ -94,7 +108,7 @@ class HomeScreenMap extends Component {
                     longitudeDelta: 0.0025,
                 }
             })
-            this._getCurrentAddress(position.coords.latitude, position.coords.longitude)
+            this._getCurrentAddress(position.coords)
         },
         (error) => alert(JSON.stringify(error)),
         {enableHighAccuracy: true, timeout: 10000, maximumAge: 0, distanceFilter:2})
@@ -134,35 +148,31 @@ class HomeScreenMap extends Component {
                 let startLocation = locations[i];
                 let nextLocation = locations[i+1];
                 if (typeof startLocation != 'undefined' && typeof nextLocation != 'undefined') {
-                    let dist = geolib.getDistance(startLocation, nextLocation)
+                    let dist = geolib.getPreciseDistance(startLocation, nextLocation, 1)
                     distance += dist;
                 }
             }
         }
+        this.state.rideDistance = distance / 1000
 
-        let optimalDistance = geolib.getDistance(this.state.initialLocation, this.state.endLocation)
+        // let optimalDistance = geolib.getDistance(this.state.initialLocation, this.state.finalLocation)
+        // this.state.optimalDistance = optimalDistance
+        this.state.optimalDistance = geolib.getPreciseDistance(this.state.initialLocation, this.state.finalLocation, 1)
 
-        console.log('optimal: ');
-        console.log(optimalDistance);
-        console.log('Distance: ');
-        console.log(distance);
-        console.log('InitialLoc: ');
-        console.log(this.state.initialLocation);
-
-        await this._getCurrentAddress(this.state.initialLocation.latitude, this.state.initialLocation.longitude)
-        console.log('Cur address: ' );
-        console.log(this.state.currentAddress);
+        await this._getCurrentAddress(this.state.initialLocation)
+        this.setState({initialAddress: this.state.currentAddress})
 
         this.state.locations = [];
         this.state.initialLocation = null;
-        this.state.endLocation = null;
+        this.state.finalLocation = null;
+    }
+
+    _toggleModal = () => {
+        this.setState({ modalVisibility: !this.state.modalVisibility})
     }
 
     componentDidMount = () => {
         this._getRegion()
-    }
-    
-    componentDidUpdate = () => {
     }
 
     componentWillUnmount = () => {
@@ -177,34 +187,113 @@ class HomeScreenMap extends Component {
         }
         const stopView = () => {
             return(
-                <Button style={styles.redBtn} title='Stop' onPress={() => {this._stopTracker();this._toggleStartBtn()}}><Text style={styles.white}>Stop</Text></Button>
+                <Button style={styles.redBtn} title='Stop' onPress={() => {this._stopTracker(); this._toggleModal();this._toggleStartBtn()}}><Text style={styles.white}>Stop</Text></Button>
             )
         }
 
         return(
             <View style={GenericScreenStyle.full}>
-                    <View style={styles.top}>
-                        <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>                     
-                    </View>
-                    <View style={styles.middle}>
-                        <Text>{this.state.currentAddress.name}, {this.state.currentAddress.postalCode}</Text>
-                    </View>
-                    <View style={styles.bottom}> 
-                        {this.state.startBtnVisibilty ? 
-                            (
-                                startView()
-                            )
-                            :
-                            (
-                                stopView()
-                            )
-                        }
-                    </View>
+                <View style={styles.top}>
+                    <MapView style={styles.mapStyle} provider={PROVIDER_GOOGLE} showsUserLocation followsUserLocation loadingEnabled showsTraffic region={this.state.region}/>                     
                 </View>
+                <View style={styles.middle}>
+                    <Text>{this.state.currentAddress.name}, {this.state.currentAddress.postalCode}</Text>
+                </View>
+                <View style={styles.bottom}> 
+                    {this.state.startBtnVisibilty ? 
+                        (startView())
+                        :
+                        (stopView())
+                    }
+                </View>
+                <FinishNavigationModal visibleState={this.state.modalVisibility} modalFunction={this._toggleModal} initialAddress={this.state.initialAddress} 
+                    finalAddress={this.state.finalAddress} distance={this.state.rideDistance} optimalDistance={this.state.optimalDistance}
+                    insertFunction={this._insertRide}/>
+            </View>
         )
     }
 }
-export default HomeScreenMap
+export default TrackingScreenMap
+
+
+function FinishNavigationModal ({visibleState, modalFunction, initialAddress, finalAddress, distance, optimalDistance, insertFunction}) {
+    const [purposeType, setPurposeType] = useState('')
+    const [purposeReason, setPurposeReason] = useState('')
+    const [diversionReason, setDiversionReason] = useState('')
+    const purposeTypes = [{value: 'Woon-Werk'}, {value: 'Klantbezoek'}, {value: 'Zakelijke bijeenkomst'}, {value: 'I.o.v. CIMSOLUTIONS'}, {value: 'Examen/cursus'}, {value: 'Onderhoud'}]
+
+    const SaveRide = () => {
+        const Ride = new RidesModel(0, format(new Date(), 'dd-MM-yyyy').toString(), distance.toString(), diversionReason, initialAddress.name, initialAddress.postalCode, finalAddress.name, finalAddress.postalCode,
+        purposeReason, purposeType)
+        insertFunction(Ride)
+    }
+
+    return (
+        <Modal isVisible={visibleState} style={ViewModalStyle.modal}>
+            <View style={FormModalStyle.modalView}>
+                <View style={GenericScreenStyle.centered}>
+                    <Text style={GenericScreenStyle.smallTitle}>Rit Informatie</Text>
+                </View>
+                <ScrollView>
+                    <View style={ViewModalStyle.form}>
+                        <View style={ViewModalStyle.row}>
+                            <Text style={GenericScreenStyle.smallTitle}>Van: </Text>
+                            <Text>{initialAddress.name}</Text> 
+                            
+                        </View>
+                        <View style={ViewModalStyle.row}>
+                            <Text style={GenericScreenStyle.smallTitle}>Naar: </Text>
+                            <Text>{finalAddress.name}</Text> 
+                        </View>  
+                        <View style={ViewModalStyle.row}>
+                            <Text style={GenericScreenStyle.smallTitle}>Afstand: </Text>
+                            <Text>Gereden afstand: {distance} Kilometer</Text>
+                            {/* <Text>Optimale afstand: {optimalDistance}</Text> */}
+                        </View>    
+                        <View style={ViewModalStyle.row}>
+                            <Text style={GenericScreenStyle.smallTitle}>Zakelijk Doel: </Text>
+                            <Dropdown 
+                                label='Type doel' 
+                                data={purposeTypes}
+                                labelFontSize={16}
+                                onChangeText={text => setPurposeType(text)}
+                            />
+                            <Text>Beschrijving:</Text> 
+                            <TextInput
+                                style={FormModalStyle.textInputMultiline}
+                                onChangeText={text => setPurposeReason(text)}
+                                defaultValue={purposeReason}
+                                multiline={true}
+                            />    
+                        </View>  
+                        <View style={ViewModalStyle.row}>
+                            <Text style={GenericScreenStyle.smallTitle}>Omweg: </Text>
+                            <Text>Beredenering:</Text> 
+                            <TextInput
+                                style={FormModalStyle.textInputMultiline}
+                                onChangeText={text => setDiversionReason(text)}
+                                defaultValue={diversionReason}
+                                multiline={true}
+                            />    
+                        </View>    
+                    </View>
+                </ScrollView>
+                <View style={FormModalStyle.formRow}>
+                    <View style={FormModalStyle.columnLeft}>
+                        {distance ? 
+                            (<View/>)
+                            :
+                            (<Button onPress={() => {SaveRide(); modalFunction()}} style={FormModalStyle.button}>Opslaan</Button>)
+                        }
+                    </View>
+                    <View style={FormModalStyle.columnRight}>
+                        <Button onPress={() => {modalFunction()}} style={FormModalStyle.button}>Verwijderen</Button>
+                    </View>                      
+                </View>
+            </View>
+        </Modal>
+    )
+}
 
 const styles = StyleSheet.create ({
     mapStyle: {
