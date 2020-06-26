@@ -70,10 +70,6 @@ class HomeScreenMap extends Component {
         (error) => alert(JSON.stringify(error)),
         {enableHighAccuracy: true, timeout: 1000, maximumAge: 0, distanceFilter:2})
     }
-    
-    componentDidUpdate = () => {
-        // this._getCurrentAddress(this.state.region["latitude"], this.state.region["longitude"])
-    }
 
     componentWillUnmount = () => {
         navigator.geolocation.clearWatch(this.watchID)
@@ -94,8 +90,6 @@ export default HomeScreenMap
 const styles = StyleSheet.create ({
     mapStyleSmall: {
         width: 370,
-        // width: '100%',
-        // height: 310,
         height: '95%',
     },
     upperView:{

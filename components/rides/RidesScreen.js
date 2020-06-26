@@ -1,10 +1,10 @@
 import React, { Component, useState } from 'react'
 import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert, Platform } from 'react-native'
 import * as DbRidesApi from '../rides/DbRidesApi'
-import * as GlobalVariables from '../Global'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
+import GenericScreenStyle from '../../styles/GenericScreenSS'
 import ListItemStyle from '../../styles/ListItemSS'
 import ViewModalStyle from '../../styles/ViewModalSS'
 import FormModalStyle from '../../styles/FormModalSS'
@@ -12,7 +12,7 @@ import RidesModel from '../../models/RidesModel'
 import { ScrollView } from 'react-native-gesture-handler'
 import DatePicker from 'react-native-datepicker'
 import RNDatePicker from '@react-native-community/datetimepicker' 
-import { format } from 'date-fns';
+import { format, addDays, parse } from 'date-fns';
 import { Dropdown } from 'react-native-material-dropdown';
 
 class RidesScreen extends Component {
@@ -30,10 +30,6 @@ class RidesScreen extends Component {
         })
     }
 
-    _getRideById = async (id) => {
-        await DbRidesApi.getRideById(id)
-    }
-
     _insertRide = async (item) => {
         await DbRidesApi.insertRides(item);
     }
@@ -43,10 +39,10 @@ class RidesScreen extends Component {
     }
 
     _copyRide = async (item) => {
-        const copy = item
-        var parts = item.date.split('-');
-        copy.date = (parseInt(parts[0])+1 + '-' + parseInt(parts[1]) + '-' + parts[2])
-        await DbRidesApi.insertRides(copy);
+        var oldDate = parse(item.date, 'dd-MM-yyyy', new Date())
+        var newDate = addDays(oldDate, 1)
+        item.date = format(newDate, 'dd-MM-yyyy')
+        await DbRidesApi.insertRides(item);
     }
 
     _deleteRide = async (id) => {
@@ -73,17 +69,21 @@ class RidesScreen extends Component {
         DbRidesApi.createRidesTable()
         this._getRides()
     }
+
+    componentDidUpdate = () => {
+        this._getRides()
+    }
    
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.top}>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>RITTEN</Text>
+            <View style={GenericScreenStyle.full}>
+                <View style={GenericScreenStyle.top}>
+                    <View style={GenericScreenStyle.titleContainer}>
+                        <Text style={GenericScreenStyle.smallTitle}>RITTEN</Text>
                     </View>
                 </View>
-                <View style={styles.middle}>
-                    <View style={styles.boxView}>
+                <View style={GenericScreenStyle.middle}>
+                    <View style={GenericScreenStyle.boxView}>
                         <FlatList
                             data={this.state.data}
                             renderItem={({ item }) => 
@@ -95,7 +95,7 @@ class RidesScreen extends Component {
                         />
                     </View>
                 </View>
-                <View style={styles.bottom}>
+                <View style={GenericScreenStyle.bottom}>
                     <Button onPress={() => {this._toggleInsertRideModal()}}>Handmatig toevoegen</Button>
                     {/* <Button onPress={() => {DbRidesApi.clearRidesTable(); this._getRides()}}>Clear Table</Button> */}
                     {/* <Button onPress={() => {DbRidesApi.dropRidesTable(); this._getRides()}}>Drop Table</Button> */}
@@ -119,7 +119,7 @@ function Item({ item, updateFunction, deleteFunction, refreshFunction, viewModal
                 <Text style={ListItemStyle.itemText}>Afstand: {item.distance}</Text>
                 <Text style={ListItemStyle.itemText}>Datum: {item.date}</Text>
             </View>
-            <View style={ListItemStyle.itemContainerRightFourButtons}> 
+            <View> 
                 <View style={ListItemStyle.itemContainerRightTop}>
                     <Button onPress={() => {onSelect(item); updateModalFunction();}} style={ListItemStyle.iconBtn}><FontAwesome name="edit" color="black" size={16}/></Button>
                     <Button onPress={() => {deleteFunction(item.id); refreshFunction()}} style={ListItemStyle.deleteBtn}><FontAwesome name="trash" color="white" size={16}/></Button>
@@ -140,40 +140,40 @@ function ViewModal({visibleState, modalFunction, item}){
         return (
             <View style={ViewModalStyle.form}>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Datum: </Text>
+                        <Text style={GenericScreenStyle.smallTitle}>Datum: </Text>
                         <Text>{item.date}</Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Postcode startpunt: </Text>
-                        <Text> {item.fromPostalCode} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Postcode startpunt: </Text>
+                        <Text>{item.fromPostalCode} </Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Startpunt adres: </Text>
-                        <Text> {item.fromAddress} </Text>
+                        <Text style={GenericScreenStyle.smallTitle}>Startpunt adres: </Text>
+                        <Text>{item.fromAddress} </Text>
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Postcode bestemming: </Text>
-                        <Text> {item.toPostalCode} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Postcode bestemming: </Text>
+                        <Text>{item.toPostalCode} </Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Bestemming adres: </Text>
-                        <Text> {item.toAddress} </Text>    
+                        <Text style={GenericScreenStyle.smallTitle}>Bestemming adres: </Text>
+                        <Text>{item.toAddress} </Text>    
                     </View>               
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Zakelijk doel: </Text>
-                        <Text> {item.purposeType} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel: </Text>
+                        <Text>{item.purposeType} </Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Zakelijk doel beschrijving: </Text>
-                        <Text> {item.purposeReason} </Text>    
+                        <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel beschrijving: </Text>
+                        <Text>{item.purposeReason} </Text>    
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Reden voor omweg: </Text>
-                        <Text> {item.diversionReason} </Text>    
+                        <Text style={GenericScreenStyle.smallTitle}>Reden voor omweg: </Text>
+                        <Text>{item.diversionReason} </Text>    
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Afstand: </Text>
-                        <Text> {item.distance} </Text>
+                        <Text style={GenericScreenStyle.smallTitle}>Afstand: </Text>
+                        <Text>{item.distance} </Text>
                     </View>
                     <Button onPress={() => {modalFunction()}} style={ViewModalStyle.button}>Close</Button>
                 </View>      
@@ -233,7 +233,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                 <ScrollView>
                     <View style={FormModalStyle.form}>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Datum: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Datum: </Text>
                               <DatePicker
                                     style={FormModalStyle.datePicker}
                                     date={date ? date : item.date}
@@ -254,7 +254,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                                 />  
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode startpunt: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode startpunt: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setFromPostalCode(text)}
@@ -262,7 +262,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Startpunt: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Startpunt: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setFromAddress(text)}
@@ -270,7 +270,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode bestemming: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode bestemming: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setToPostalCode(text)}
@@ -278,7 +278,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Bestemming: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Bestemming: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setToAddress(text)}
@@ -286,7 +286,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Zakelijk doel: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel: </Text>
                             <Text>Huidig doel: {item.purposeType}</Text>
                             <Dropdown 
                                 label='Nieuw doel' 
@@ -296,7 +296,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Zakelijk doel beschrijving: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel beschrijving: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setPurposeReasonType(text)}
@@ -304,7 +304,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Reden voor omweg: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Reden voor omweg: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setDiversionReason(text)}
@@ -312,7 +312,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Afstand: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Afstand: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setDistance(text)}
@@ -396,7 +396,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                 <ScrollView>
                     <View style={FormModalStyle.form}>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Datum: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Datum: </Text>
                             <DatePicker
                                 style={FormModalStyle.datePicker}
                                 date={date}
@@ -417,7 +417,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode startpunt: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode startpunt: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setFromPostalCode(text)}
@@ -425,7 +425,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Startpunt: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Startpunt: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setFromAddress(text)}
@@ -433,7 +433,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode bestemming: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode bestemming: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setToPostalCode(text)}
@@ -441,7 +441,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Bestemming: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Bestemming: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setToAddress(text)}
@@ -449,7 +449,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Zakelijk doel: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel: </Text>
                             <Dropdown 
                                 label='Type doel' 
                                 data={purposeTypes}
@@ -458,7 +458,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Zakelijk doel beschrijving (Optioneel): </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Zakelijk doel beschrijving (Optioneel): </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setPurposeReasonType(text)}
@@ -466,7 +466,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Reden voor omweg: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Reden voor omweg: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setDiversionReason(text)}
@@ -474,7 +474,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Afstand: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Afstand: </Text>
                             <TextInput
                                 style={FormModalStyle.textInput}
                                 onChangeText={text => setDistance(text)}
@@ -496,45 +496,3 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
         </Modal>
     )
 }
-
-const styles = StyleSheet.create ({
-    container: {
-        flex: 1,
-        borderWidth: 2,
-        borderColor: 'red',
-        width: '100%'
-    },
-    top: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    middle:{
-        flex: 6,
-    },
-    bottom: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    boxView: {
-        flex: 1,
-        borderWidth: 2,
-        backgroundColor: 'gray',
-    },
-    titleContainer: {
-        borderWidth: 2,
-        backgroundColor: 'lightgreen',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '40%',
-        height: '70%',
-    },
-    title: {
-        fontSize: 16,
-        fontWeight: "bold",    
-    },
-    centered:{
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-})

@@ -135,13 +135,11 @@ class PersonalInfoScreen extends Component {
                         </View>     
                     </View>
                 </ScrollView>
-                <Text>{this.state.currentEmailAddress}</Text>
             </View>
         )
     }
 }
 export default PersonalInfoScreen
-
 
 
 const styles = StyleSheet.create ({
@@ -152,8 +150,6 @@ const styles = StyleSheet.create ({
     },
     bottom: {
         flex: 6,
-        // justifyContent: 'center',
-        // paddingTop: '5%',
     },
     bottomHalf: {
         padding: '1%',
@@ -161,6 +157,5 @@ const styles = StyleSheet.create ({
     },
     scrollView: {
         flex: 1,
-        // margin: '1%'
     }
 })

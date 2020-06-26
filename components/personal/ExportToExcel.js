@@ -3,65 +3,76 @@ import { View, Text, StyleSheet, Dimensions, FlatList, TextInput } from 'react-n
 import { Button } from 'react-native-paper';
 import GenericScreenStyle from '../../styles/GenericScreenSS'
 import FormStyle from '../../styles/FormSS'
-// import Excel from 'exceljs'
-import XLSX, { writeFile } from 'xlsx'
+import XLSX from 'xlsx'
+import * as DbRidesApi from '../rides/DbRidesApi'
 import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import { Dropdown } from 'react-native-material-dropdown';
+import * as MailComposer from 'expo-mail-composer';
 
-const output = str => str;
-
-const DocDir = FileSystem.documentDirectory
-const file = DocDir + "test.xlsx"
+const CacheDir = FileSystem.cacheDirectory
 
 class ExportToExcel extends Component {
     state = {
-        emailAddress: ""
+        emailAddress: '',
+        monthArray: [
+            {value: 'Januari'},
+            {value: 'Februari'},
+            {value: 'Maart'},
+            {value: 'April'},
+            {value: 'Mei'},
+            {value: 'Juni'},
+            {value: 'Juli'},
+            {value: 'Augustus'},
+            {value: 'September'},
+            {value: 'Oktober'},
+            {value: 'November'},
+            {value: 'December'}],
+        chosenMonth: {}
     }
 
-    _excelWriter = async () => {
-        var data = [{"Name:":"Test"}]
-        var filedir = 'C:/Users/Shervin/Documents/GITHUB projects/CimKmApp/components/personal/kmreg.xlsx'
-        var filename = './kmreg.xlsx'
+    _excelWriter = async (isMail, month) => {
+        var data = await this._getRidesByMonth(month.index)
+        if (!data.length > 0) {
+            return alert('Geen ritten gevonden in die maand')
+        }
+        const fileName = 'km-reg-' + month.item + '.xlsx'
+        const uri = CacheDir + fileName;
 
-        const ws = XLSX.utils.json_to_sheet(data)
+        var ws = XLSX.utils.json_to_sheet(data);
+        var wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Km registratie " + month.item);
+        const wbout = XLSX.write(wb, {
+          type: 'base64',
+          bookType: "xlsx"
+        });
 
-        /* Build a new workbook */
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "SheetJS")
-
-        /* Write the file */
-        const wboutput = XLSX.write(wb, {type:'binary', bookType:'xlsx'})
-
-        // console.log(wboutput)
-
-        // FileSystem.writeAsStringAsync(file, "test").then((res) => {
-        //     alert("Export Succes")
-        // }).catch((err) => {alert("Export Failed, ", "Error: " + err.message)})
-
-        writeFile(file, output(wboutput), 'ascii').then((res) => {
-            alert("Export Succes")
-        }).catch((err) => {alert("Export Failed, ", "Error: " + err.message)})
+        await FileSystem.writeAsStringAsync(uri, wbout, {
+          encoding: FileSystem.EncodingType.Base64
+        });    
         
+        if (isMail) {
+            this._sendEmail(uri, month.item)
+        } else {
+            await Sharing.shareAsync(uri, {
+                mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                dialogTitle: 'Km Registratie',
+                UTI: 'com.microsoft.excel.xlsx'
+            });
+        }
     }
 
-    _ExcelReader = async () => {
-        console.log(FileSystem.readAsStringAsync(file))
-        // console.log(FileSystem.getInfoAsync(file))
+    _sendEmail = async (uri, month) => {
+        await MailComposer.composeAsync({ subject:"Km Registratie " + month, attachments:[uri]} )
     }
 
-    componentDidMount = () => {
-        // console.log(DocDir)
-        this._excelWriter()
-        // this._ExcelReader()
-    }
-    
-    componentDidUpdate = () => {
-
+    _getRidesByMonth = async (month) => {
+        if (month === null) {
+            return alert('Kies eerst een maand')
+        }
+        return await DbRidesApi.getRideByMonth(month)
     }
 
-    componentWillUnmount = () => {
-
-    }
-   
     render() {
         return (
             <View style={GenericScreenStyle.container}>
@@ -71,24 +82,32 @@ class ExportToExcel extends Component {
                     </View>
                 </View>
                 <View style={styles.middle}>
-                    <View style={GenericScreenStyle.centered}>
-                        <Text style={GenericScreenStyle.bigTitle}> Kies een maand </Text>
-                    </View>
-                    <View style={styles.top}>
-                        <TextInput style={styles.textInput}></TextInput>
-                    </View>
-                    <View style={styles.bottom}>
-                        <View style={FormStyle.infoBox}>
-                            <View style={FormStyle.form}>
-                                <View style={FormStyle.row}>
-                                    <Text style={GenericScreenStyle.smallTitle}> Emailadres: </Text>
-                                    <TextInput style={FormStyle.textInput} onChangeText={text => set(text)} defaultValue={this.state.emailAddress}/>
+                    <View style={FormStyle.infoBox}>
+                        <View style={FormStyle.form}>
+                            <View style={GenericScreenStyle.centered}>
+                                    <Text style={GenericScreenStyle.smallTitle}>Beschrijving</Text>
+                            </View>
+                            <View style={styles.description}>
+                                <Text>Kies een maand van de ritten die je wilt exporteren.</Text>
+                                <Text>Je kan je ritten exporteren via de mail of met een andere app op je mobiel.</Text>
+                            </View>
+                            <View style={FormStyle.row}>
+                                <View style={styles.dropdown}>
+                                    <Dropdown 
+                                            label='Kies een maand' 
+                                            data={this.state.monthArray}
+                                            labelFontSize={16}
+                                            onChangeText={(item, index) => this.setState({chosenMonth: {item, index}})}
+                                            itemCount={6}
+                                    />
                                 </View>
                             </View>
-                            <Button onPress={() => this._excelWriter()}>Verstuur</Button>
+                            <View style={FormStyle.row}>
+                                <Button onPress={() => this._excelWriter(true, this.state.chosenMonth)}>Verstuur via mail</Button>
+                                <Button onPress={() => this._excelWriter(false, this.state.chosenMonth)}>Andere app</Button>
+                            </View>
                         </View>
-                    </View>
-                
+                    </View>                   
                 </View>
             </View>
         )
@@ -101,18 +120,10 @@ const styles = StyleSheet.create ({
         flex: 6,
         paddingTop: '10%'
     },
-    top: {
-        flex: .5,
-        alignItems: "center"
+    dropdown:{
+        width: '50%'
     },
-    bottom: {
-        flex: 8,
-        padding: '5%',
-    },
-    textInput: {
-        flex: 1,
-        backgroundColor: "grey",
-        height: 16,
-        width: '90%',
+    description: {
+        paddingTop: '1%'
     }
 })

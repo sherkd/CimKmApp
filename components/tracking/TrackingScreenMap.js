@@ -155,8 +155,6 @@ class TrackingScreenMap extends Component {
         }
         this.state.rideDistance = distance / 1000
 
-        // let optimalDistance = geolib.getDistance(this.state.initialLocation, this.state.finalLocation)
-        // this.state.optimalDistance = optimalDistance
         this.state.optimalDistance = geolib.getPreciseDistance(this.state.initialLocation, this.state.finalLocation, 1)
 
         await this._getCurrentAddress(this.state.initialLocation)

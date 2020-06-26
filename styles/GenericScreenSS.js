@@ -3,11 +3,10 @@ import { StyleSheet } from 'react-native';
 export default StyleSheet.create({
     safeAreaViewContainer: {
         flex: 1,
-        backgroundColor: '#fff',
+        // backgroundColor: '#fff',
     },
     full:{
         flex: 1,
-        // alignItems: 'center',
     },
     container: {
         flex: 1,

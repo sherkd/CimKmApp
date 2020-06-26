@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { View, StyleSheet} from 'react-native'
 import Navigator from './routes/App-navigator.js'
 import { registerRootComponent, AppLoading } from 'expo';
 import * as Font from 'expo-font';
@@ -43,7 +42,7 @@ class App extends Component {
     }
 
     return (
-      <Navigator />
+        <Navigator />
     );
   }
 }

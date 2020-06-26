@@ -1,10 +1,11 @@
 import React from 'react'
-import { StyleSheet, View, Button} from 'react-native'
+import { StyleSheet, View } from 'react-native'
 import HomeScreenMap from '../components/home/HomeScreenMap'
 import HomeScreenQuickStart from '../components/home/HomeScreenQuickStart'
 import { SafeAreaView } from 'react-native-safe-area-context';
-// import { Button } from 'react-native-paper'
+import { Button } from 'react-native-paper'
 import GenericScreenStyle from '../styles/GenericScreenSS'
+import { StatusBar } from 'expo-status-bar';
 
 export default function Home({ navigation }) {
     return (
@@ -13,12 +14,12 @@ export default function Home({ navigation }) {
           <HomeScreenMap />
         </View>
         <View style={styles.middle}>
-          <Button title='Start Navigatie' onPress={() => navigation.navigate('Tracking')}></Button>
-          {/* <Button onPress={() => navigation.navigate('Tracking')}>Start Navigatie</Button> */}
+          <Button onPress={() => navigation.navigate('Tracking')}>Start Navigatie</Button>
         </View>
         <View style={styles.bottom}>
           <HomeScreenQuickStart/>
         </View>
+        <StatusBar style="Dark"/>
       </SafeAreaView>
     );
 }

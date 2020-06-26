@@ -7,6 +7,7 @@ export default StyleSheet.create({
     row:{
         flexDirection: 'row',
         padding: '1%',
+        justifyContent: "center"
     },
     infoBox: {
         borderWidth: 2,

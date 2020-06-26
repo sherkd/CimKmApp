@@ -4,13 +4,14 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import { createStackNavigator } from '@react-navigation/stack';
 import { MaterialCommunityIcons } from 'react-native-vector-icons';
 import CustomIcon from '../components/routes/CustomIcon'
-import HomeScreen from '../screens/Home'
-import TrackingScreen from '../screens/Tracking'
-import RidesScreen from '../screens/Rides'
-import AddressesScreen from '../screens/Addresses'
-import PersonalScreen from '../screens/Personal'
-import PersonalInfoScreen from '../screens/PersonalInfo'
-import ExportScreen from '../screens/PersonalExport'
+import HomeScreen from '../views/Home'
+import TrackingScreen from '../views/Tracking'
+import RidesScreen from '../views/Rides'
+import AddressesScreen from '../views/Addresses'
+import PersonalScreen from '../views/Personal'
+import PersonalInfoScreen from '../views/PersonalInfo'
+import ExportScreen from '../views/PersonalExport'
+import BugReporterScreen from '../views/PersonalBugReporter'
 
 const Tab = createMaterialBottomTabNavigator();
 const HomeStack = createStackNavigator();
@@ -31,6 +32,7 @@ function PersonalStackScreen() {
         <PersonalStack.Screen name="Persoonlijk Home" component={PersonalScreen}/>
         <PersonalStack.Screen name="Persoonlijk Info" component={PersonalInfoScreen} />
         <PersonalStack.Screen name="ExportToExcel" component={ExportScreen} />
+        <PersonalStack.Screen name="BugReporter" component={BugReporterScreen} />
       </PersonalStack.Navigator>
     );
   }
@@ -41,29 +43,16 @@ export default function AppNavigator() {
             <Tab.Navigator 
                 initialRouteName="Home"
                 activeColor="#e91e63"
-                // activeColor="red"
                 labelStyle={{ fontSize: 12 }}
                 barStyle={{ backgroundColor: 'lightgreen'}}
                 screenOptions= {{}}
-                // screenOptions={({ route }) => ({
-                //     tabBarLabel: route.name,
-                //     tabBarIcon: ({ color, size }) => {
-                //         if (route.name === 'Addresses') {
-                //             console.log('ROUTE', route);
-                //             return <CustomIcon name="folder-home" color={color} size={size} />
-                //         }
-                //         else {
-                //             return <MaterialCommunityIcons name="home" color={color} size={size} />
-                //         }
-                //     },
-                // })}
             >
                 <Tab.Screen 
                     name="Home" 
                     component={HomeStackScreen}
                     options={{
                         tabBarLabel: 'Home',
-                        tabBarIcon: ({ color, size }) => (
+                        tabBarIcon: ({ color }) => (
                             <MaterialCommunityIcons name="home" color={color} size={20} />
                         ),
                     }}
@@ -73,7 +62,7 @@ export default function AppNavigator() {
                     component={RidesScreen} 
                     options={{
                         tabBarLabel: 'Ritten',
-                        tabBarIcon: ({ color, size }) => (
+                        tabBarIcon: ({ color }) => (
                             <MaterialCommunityIcons name="car" color={color} size={20} />
                         ),
                     }}
@@ -83,7 +72,7 @@ export default function AppNavigator() {
                     component={AddressesScreen} 
                     options={{
                         tabBarLabel: 'Adressen',
-                        tabBarIcon: ({ color, size }) => (
+                        tabBarIcon: ({ color }) => (
                             <CustomIcon name="folder-home" color={color} size={20} />
                         ),
                     }}
@@ -93,7 +82,7 @@ export default function AppNavigator() {
                     component={PersonalStackScreen} 
                     options={{
                         tabBarLabel: 'Persoonlijk',
-                        tabBarIcon: ({ color, size }) => (
+                        tabBarIcon: ({ color }) => (
                             <MaterialCommunityIcons name="account" color={color} size={20} />
                         ),
                     }}

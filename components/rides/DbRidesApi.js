@@ -1,5 +1,6 @@
 import * as SQLite from 'expo-sqlite';
 import RidesModel from '../../models/RidesModel'
+import * as DateFns from 'date-fns';
 
 const db = SQLite.openDatabase('CimKmApp.db')
 
@@ -40,11 +41,33 @@ export async function getRides() {
                 for (let i = 0; i < len; i++) {
                     rides.push(results.rows.item(i));
                 }
+                if (rides.length > 0) {
+                    resolve(rides)
+                }else{
+                    resolve(alert('Geen ritten gevonden'))
+                }
+            })
+        })
+    })
+}
+
+export async function getRideByMonth(month) {
+    return new Promise((resolve) => {
+        db.transaction((tx) => {    
+            tx.executeSql('SELECT date, fromPostalCode, fromAddress, toPostalCode, toAddress, purposeType, purposeReason, diversionReason, distance FROM rides', 
+            [], function(tx, results) {
+                const rides = [];
+                var len = results.rows.length;
+                for (let i = 0; i < len; i++) {
+                    var date = DateFns.parse(results.rows.item(i).date, 'dd-MM-yyyy', new Date())
+                    if (DateFns.getMonth(date) === month) {
+                        rides.push(results.rows.item(i));
+                    }
+                }
                 resolve(rides)
             })
         })
     })
-    // .catch(alert('Ophalen van ritten mislukt probeer later opnieuw.'))
 }
 
 export async function getRideById(id) {
@@ -59,7 +82,6 @@ export async function getRideById(id) {
             })
         })
     })
-    // .catch(alert('Ophalen van rit mislukt probeer later opnieuw.'))
 }
 
 export async function insertRides(ride) {
@@ -81,23 +103,21 @@ export async function insertRides(ride) {
 export async function updateRides(ride) {
     return new Promise((resolve) => {
         db.transaction((tx) => {
-            tx.executeSql( `UPDATE rides 
-                            SET date = ?, distance = ?, diversionReason = ?, fromAddress = ?, fromPostalCode = ?, toAddress = ?, toPostalCode = ?, purposeReason = ?, purposeType = ?
-                            WHERE id = ?`, 
-                            [ride.date, ride.distance, ride.diversionReason, ride.fromAddress, ride.fromPostalCode, ride.toAddress, ride.toPostalCode, ride.purposeReason,
-                                ride.purposeType, ride.id], (tx, results) => {
-                if(results.rowsAffected>0){
-                    alert('Update Successfull')
-                }else{
-                    alert('Updation Failed');
+            tx.executeSql( 
+                `UPDATE rides 
+                SET date = ?, distance = ?, diversionReason = ?, fromAddress = ?, fromPostalCode = ?, toAddress = ?, toPostalCode = ?, purposeReason = ?, purposeType = ?
+                WHERE id = ?`, 
+                [ride.date, ride.distance, ride.diversionReason, ride.fromAddress, ride.fromPostalCode, ride.toAddress, ride.toPostalCode, ride.purposeReason,
+                    ride.purposeType, ride.id], (tx, results) => {
+
                 }
-            })      
+            )      
         })
     })
 }
 
 export async function deleteRide(id) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         db.transaction((tx) => {
             tx.executeSql('DELETE FROM rides WHERE id = ?', [id])
         })
@@ -117,6 +137,5 @@ export async function clearRidesTable() {
         } catch (error) {
             console.error(error)
         }
-        
     })
 }

@@ -1,7 +1,6 @@
 import Model from "react-native-models";
 
 export default class Cars extends Model {
-    // className used instead name because babel replaces him at run-time.
     static get className() {
         return "Cars";
     }
@@ -36,6 +35,18 @@ export default class Cars extends Model {
     }
 
     test() {
-
+        //     this.setA(1);
+        //     this.setB("bar");
+    
+        //     const a = this.getA(); // a === 1
+        //     const b = this.getB(); // b === "bar"
+    
+        //     try {
+        //         this.setA("1");
+        //     } catch (error) {
+        //         return "exception";
+        //     }
+    
+        //     return "no exception";
     }
 }

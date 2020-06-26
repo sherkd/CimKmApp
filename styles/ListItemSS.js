@@ -7,22 +7,12 @@ export default StyleSheet.create({
         borderWidth: 2,
         padding: 10,
         margin: 10,
-        // alignItems: 'center',
-        // justifyContent: 'center',
     },
     itemContainerLeft: {
         flex: 4,
-        borderWidth: 2,
-        borderColor: 'yellow'
-    },
-    itemContainerRightFourButtons: {
-        borderWidth: 2,
-        borderColor: 'blue'
     },
     itemContainerRightThreeButtons: {
         flex: 3,
-        borderWidth: 2,
-        borderColor: 'blue'
     },
     itemContainerRightTop: {
         flexDirection: 'row',

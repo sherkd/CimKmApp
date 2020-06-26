@@ -4,6 +4,7 @@ import * as DbAddressApi from '../addresses/DbAddressesApi'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
 import Modal from 'react-native-modal'
+import GenericScreenStyle from '../../styles/GenericScreenSS'
 import ListItemStyle from '../../styles/ListItemSS'
 import ViewModalStyle from '../../styles/ViewModalSS'
 import FormModalStyle from '../../styles/FormModalSS'
@@ -72,14 +73,14 @@ class AddressScreen extends Component {
 
     render() {
         return (
-            <View style={styles.container}>
-                <View style={styles.top}>
-                    <View style={styles.titleContainer}>
-                        <Text style={styles.title}>ADRESSENBOEK</Text>
+            <View style={GenericScreenStyle.full}>
+                <View style={GenericScreenStyle.top}>
+                    <View style={GenericScreenStyle.titleContainer}>
+                        <Text style={GenericScreenStyle.smallTitle}>ADRESSENBOEK</Text>
                     </View>
                 </View>
-                <View style={styles.middle}>
-                    <View style={styles.boxView}>
+                <View style={GenericScreenStyle.middle}>
+                    <View style={GenericScreenStyle.boxView}>
                         <FlatList
                             data={this.state.data}
                             renderItem={({ item }) => 
@@ -91,7 +92,7 @@ class AddressScreen extends Component {
                         />
                     </View>
                 </View>
-                <View style={styles.bottom}>
+                <View style={GenericScreenStyle.bottom}>
                     <Button onPress={() => {this._toggleInsertAddressModal()}}>Handmatig toevoegen</Button>
                     {/* <Button onPress={() => {DbAddressApi.clearAddressesTable(); this._getAddress()}}>Clear Table</Button> */}
                 </View>
@@ -134,28 +135,28 @@ function ViewModal({visibleState, modalFunction, item}){
             <View style={ViewModalStyle.modalViewApple}>
                 <View style={ViewModalStyle.form}>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Bijnaam: </Text>
+                        <Text style={GenericScreenStyle.smallTitle}>Bijnaam: </Text>
                         <Text>{item.nickname}</Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Adres: </Text>
-                        <Text> {item.street} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Adres: </Text>
+                        <Text>{item.street} </Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Postcode: </Text>
-                        <Text> {item.postalCode} </Text>
+                        <Text style={GenericScreenStyle.smallTitle}>Postcode: </Text>
+                        <Text>{item.postalCode} </Text>
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Stad: </Text>
-                        <Text> {item.city} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Stad: </Text>
+                        <Text>{item.city} </Text> 
                     </View>
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Regio: </Text>
-                        <Text> {item.region} </Text>    
+                        <Text style={GenericScreenStyle.smallTitle}>Regio: </Text>
+                        <Text>{item.region} </Text>    
                     </View>               
                     <View style={ViewModalStyle.row}>
-                        <Text style={styles.title}>Land: </Text>
-                        <Text> {item.country} </Text> 
+                        <Text style={GenericScreenStyle.smallTitle}>Land: </Text>
+                        <Text>{item.country} </Text> 
                     </View>
                     <Button onPress={() => {modalFunction()}} style={ViewModalStyle.button}>Close</Button>
                 </View>      
@@ -194,7 +195,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                 <ScrollView>
                     <View style={FormModalStyle.form}>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Bijnaam: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Bijnaam: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setNickname(text)}
@@ -202,7 +203,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Adres: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Adres: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setStreet(text)}
@@ -210,7 +211,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setPostalCode(text)}
@@ -218,7 +219,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Stad: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Stad: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setCity(text)}
@@ -226,7 +227,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Regio: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Regio: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setRegion(text)}
@@ -234,7 +235,7 @@ function UpdateModal({visibleState, modalFunction, updateFunction, item, refresh
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Land: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Land: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setCountry(text)}
@@ -286,7 +287,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                 <ScrollView>
                     <View style={FormModalStyle.form}>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Bijnaam: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Bijnaam: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setNickname(text)}
@@ -294,7 +295,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Adres: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Adres: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setStreet(text)}
@@ -302,7 +303,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Postcode: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Postcode: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setPostalCode(text)}
@@ -310,7 +311,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Stad: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Stad: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setCity(text)}
@@ -318,7 +319,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Regio: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Regio: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setRegion(text)}
@@ -326,7 +327,7 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                             />    
                         </View>               
                         <View style={FormModalStyle.row}>
-                            <Text style={styles.title}>Land: </Text>
+                            <Text style={GenericScreenStyle.smallTitle}>Land: </Text>
                             <TextInput
                                 style={{ height: 40, borderColor: 'gray', borderWidth: 1 }}
                                 onChangeText={text => setCountry(text)}
@@ -335,10 +336,9 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
                         </View>
                     </View>
                 </ScrollView>    
-                <View style={FormModalStyle.btnRow}>
+                <View style={FormModalStyle.formRow}>
                     <View style={FormModalStyle.columnLeft}>
-                        <Button onPress={() => {insertFunction(fieldsValidator(formValues)); refreshFunction(); modalFunction()}} 
-                            style={FormModalStyle.button}>Save</Button>
+                        <Button onPress={() => {insertFunction(fieldsValidator(formValues)); refreshFunction(); modalFunction()}} style={FormModalStyle.button}>Save</Button>
                     </View>
                     <View style={FormModalStyle.columnRight}>
                         <Button onPress={() => {modalFunction()}} style={FormModalStyle.button}>Cancel</Button>
@@ -349,44 +349,3 @@ function InsertModal({visibleState, modalFunction, insertFunction, refreshFuncti
     )
 }
 
-const styles = StyleSheet.create ({
-    container: {
-        flex: 1,
-        borderWidth: 2,
-        borderColor: 'red',
-        width: '100%',
-    },
-    top: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    middle:{
-        flex: 6,
-    },
-    bottom: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    boxView: {
-        flex: 1,
-        borderWidth: 2,
-        backgroundColor: 'gray',
-    },
-    titleContainer: {
-        borderWidth: 2,
-        backgroundColor: 'lightgreen',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '40%',
-        height: '70%',
-    },
-    title: {
-        fontSize: 16,
-        fontWeight: "bold",    
-    },
-    centered:{
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-})

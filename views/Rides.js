@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button, TextInput, SafeAreaView } from 'react-native'
+import React from 'react'
+import { View, SafeAreaView } from 'react-native'
 import RidesScreen from '../components/rides/RidesScreen'
 import GenericScreenStyle from '../styles/GenericScreenSS'
 

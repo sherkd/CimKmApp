@@ -25,6 +25,7 @@
     ],
     "ios": {
       "supportsTablet": true
-    }
+    },
+    "description": "A simple Kilometer register app made for CIMSOLUTIONS. To get the app you have to Download the Expo App from your local app store. Afterwards use the QR code with the camera of your mobile device OR use the request link feature on the right side of this website and mail a link to yourself. With this link you can open the app via your mobile device in your mail app."
   }
 }

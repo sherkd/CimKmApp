@@ -1,6 +1,6 @@
-import React, { Component } from 'react'
-import { StyleSheet, Text, View, Button, TextInput, SafeAreaView} from 'react-native'
-import ExportToExcelScreen from '../components/personal/ExportToExcel'
+import React from 'react'
+import { StyleSheet, View, Button, SafeAreaView} from 'react-native'
+import BugReporterScreen from '../components/personal/BugReporter'
 import GenericScreenStyle from '../styles/GenericScreenSS'
 
 export default function PersonalExport({ navigation }) {
@@ -8,7 +8,7 @@ export default function PersonalExport({ navigation }) {
     <SafeAreaView style={GenericScreenStyle.safeAreaViewContainer}>
       <View style={GenericScreenStyle.full}>
           <View style={styles.top}>
-              <ExportToExcelScreen/>
+              <BugReporterScreen/>
           </View>
           <View style={GenericScreenStyle.bottom}>
               <Button title='Terug' onPress={() => navigation.navigate('Persoonlijk Home')}></Button>  
