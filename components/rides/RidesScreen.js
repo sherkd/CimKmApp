@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react'
-import { View, Text, StyleSheet, Dimensions, FlatList, TextInput, Alert, Platform } from 'react-native'
+import { View, Text, FlatList, TextInput, Platform } from 'react-native'
 import * as DbRidesApi from '../rides/DbRidesApi'
 import { Button } from 'react-native-paper'
 import { FontAwesome } from '@expo/vector-icons'
@@ -22,12 +22,20 @@ class RidesScreen extends Component {
         updateRideModalVisible: false,
         insertRideModalVisible: false,
         selectedItem: Object,
+        noRidesFoundMessage:'Geen Ritten Gevonden',
+        isThereAnyRides: false,
     }
 
     _getRides = async () => {
         this.setState( {
             data: await DbRidesApi.getRides()
         })
+    }
+
+    _refreshRides = async () => {
+        setTimeout(async function(_self){
+            _self._getRides()
+        }, 6000, this);
     }
 
     _insertRide = async (item) => {
@@ -61,6 +69,10 @@ class RidesScreen extends Component {
         this.setState({ insertRideModalVisible: !this.state.insertRideModalVisible})
     }
 
+    _toggleRidesCheckBool = () => {
+        this.setState({ isThereAnyRides: !this.state.isThereAnyRides})
+    }
+
     _onSelect = (item) => {
         this.setState({ selectedItem: item })
     }
@@ -70,11 +82,22 @@ class RidesScreen extends Component {
         this._getRides()
     }
 
-    componentDidUpdate = () => {
+    componentDidUpdate = (prevProps, prevState) => {
+        console.log(prevProps)
+        console.log(prevState)
+        this._refreshRides()
+    }
+
+    componentWillUnmount = () => {
         this._getRides()
     }
-   
+
     render() {
+        if (this.state.data.length > 0) {
+            this.state.isThereAnyRides = true
+        }else{
+            this.state.isThereAnyRides = false
+        }
         return (
             <View style={GenericScreenStyle.full}>
                 <View style={GenericScreenStyle.top}>
@@ -84,15 +107,25 @@ class RidesScreen extends Component {
                 </View>
                 <View style={GenericScreenStyle.middle}>
                     <View style={GenericScreenStyle.boxView}>
-                        <FlatList
-                            data={this.state.data}
-                            renderItem={({ item }) => 
-                                <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
-                                viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
-                                viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}
-                                onSelect={this._onSelect} selectedItem={this.state.selectedItem} copyFunction= {this._copyRide}/>}
-                            keyExtractor={item => item.id}
-                        />
+                        {this.state.isThereAnyRides ? 
+                            (
+                                <FlatList
+                                data={this.state.data}
+                                renderItem={({ item }) => 
+                                    <Item item={item} updateFunction = {this._updateRide} deleteFunction = {this._deleteRide} refreshFunction = {this._getRides} 
+                                    viewModalFunction= {this._toggleViewRideModal} updateModalFunction= {this._toggleEditRideModal} 
+                                    viewModalVisibility={this.state.viewRideModalVisible} updateModalVisibility={this.state.updateRideModalVisible}
+                                    onSelect={this._onSelect} selectedItem={this.state.selectedItem} copyFunction= {this._copyRide}/>}
+                                keyExtractor={item => item.id}
+                                />
+                            )
+                            :
+                            (
+                                <View style={GenericScreenStyle.boxViewSpacing}>
+                                    <Text style={GenericScreenStyle.smallTitleWhiteFont}>{this.state.noRidesFoundMessage}</Text>
+                                </View>
+                            )
+                        }
                     </View>
                 </View>
                 <View style={GenericScreenStyle.bottom}>

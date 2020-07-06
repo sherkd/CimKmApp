@@ -1,4 +1,4 @@
-import React, { Component, useState } from 'react'
+import React, { Component, useState, Children } from 'react'
 import { View, Text, StyleSheet, ScrollView, TextInput} from 'react-native'
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps'
 import * as Location from 'expo-location'
@@ -12,8 +12,12 @@ import Modal from 'react-native-modal'
 import RidesModel from '../../models/RidesModel'
 import { format } from 'date-fns';
 import * as DbRidesApi from '../rides/DbRidesApi'
+import RidesScreen from '../rides/RidesScreen'
 
 class TrackingScreenMap extends Component {
+    constructor(props){
+        super(props)
+    }
     state = {
         watchID: Number,
         locations: [],
@@ -140,8 +144,6 @@ class TrackingScreenMap extends Component {
 
     _calculateDistance = async () => {
         let locations = this.state.locations;
-        console.log('locs: ')
-        console.log(locations)
         let distance = 0;
         for (let i = 0; i < locations.length; i++) {
             if (locations.length >= i+1) {
@@ -206,7 +208,7 @@ class TrackingScreenMap extends Component {
                 </View>
                 <FinishNavigationModal visibleState={this.state.modalVisibility} modalFunction={this._toggleModal} initialAddress={this.state.initialAddress} 
                     finalAddress={this.state.finalAddress} distance={this.state.rideDistance} optimalDistance={this.state.optimalDistance}
-                    insertFunction={this._insertRide}/>
+                    insertFunction={this._insertRide} />              
             </View>
         )
     }
@@ -281,7 +283,7 @@ function FinishNavigationModal ({visibleState, modalFunction, initialAddress, fi
                         {distance ? 
                             (<View/>)
                             :
-                            (<Button onPress={() => {SaveRide(); modalFunction()}} style={FormModalStyle.button}>Opslaan</Button>)
+                            (<Button onPress={() => {SaveRide(); modalFunction();}} style={FormModalStyle.button}>Opslaan</Button>)
                         }
                     </View>
                     <View style={FormModalStyle.columnRight}>

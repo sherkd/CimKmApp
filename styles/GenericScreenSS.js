@@ -58,5 +58,15 @@ export default StyleSheet.create({
     centered:{
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    boxViewSpacing:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '1%'
+    },
+    smallTitleWhiteFont: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: 'white'
     }
 });

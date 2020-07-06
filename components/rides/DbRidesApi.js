@@ -41,11 +41,7 @@ export async function getRides() {
                 for (let i = 0; i < len; i++) {
                     rides.push(results.rows.item(i));
                 }
-                if (rides.length > 0) {
-                    resolve(rides)
-                }else{
-                    resolve(alert('Geen ritten gevonden'))
-                }
+                resolve(rides)
             })
         })
     })
